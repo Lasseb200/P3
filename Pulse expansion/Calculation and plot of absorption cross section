@@ -1,0 +1,83 @@
+n_water = 1.333;
+eps_water = n_water^2;
+eps_0 = 8.85418782*10^(-12);
+mu_0 = 1.257*10^(-6);
+n_0 = sqrt(mu_0*eps_0);
+E_0 = 1; %Applied electric field
+img = sqrt(-1);
+load nrau.m
+load nrag.m
+load niau.m
+load niag.m
+data = [nrag niag(:,2) nrau(:,2) niau(:,2)];
+wavelength_micrometer = (data(:,1));
+wl = (10^-6).*wavelength_micrometer; %wavelength in metres
+wavelength = linspace(300*10^(-9),900*10^(-9),400);
+n_data_Ag = data(:,2);
+k_data_Ag = data(:,3);
+n_data_Au = data(:,4);
+k_data_Au = data(:,5);
+n_Au = interp1(wl,n_data_Au,wavelength,'makima');
+k_Au = interp1(wl,k_data_Au,wavelength,'makima');
+n_Ag = interp1(wl,n_data_Ag,wavelength,'makima');
+k_Ag = interp1(wl,k_data_Ag,wavelength,'makima');
+eps_Ag = (n_Ag+img.*k_Ag).^2;
+eps_Au = (n_Au+img.*k_Au).^2;
+
+for index_i = 1:N
+i=index_i;
+for index_j = 1:N
+j=index_j;
+if not(i==j)
+
+A(i,j) = (((4*pi)^(-1))*(sqrt(((F(1,i)-F(1,j))^2)+(F(2,i)-F(2,j))^2+(F(3,i)-F(3,j))^2))^(-1))*F(4,j);
+
+%B(i,j) = ((-1)/(4*pi))*(((F(1,j)-F(1,i))*(F(5,j)))+((F(2,j)-F(2,i))*(F(6,j)))+((F(3,j)...
+%- F(3,i))*(F(7,j))))*F(4,j)*(((sqrt((F(1,i) - F(1,j))^2 + (F(2,i) - F(2,j))^2 ...
+%+ (F(3,i) - F(3,j))^2))^3)^-1);
+B(i,j) = ((-1)/(4*pi))*(((F(1,j)-F(1,i))*(F(5,j)))+((F(2,j)-F(2,i))*(F(6,j)))+((F(3,j)-F(3,i))*(F(7,j))))*F(4,j)*(((sqrt((F(1,i) - F(1,j))^2 + (F(2,i) - F(2,j))^2 + (F(3,i) - F(3,j))^2))^3)^-1);
+
+else
+A(i,j) = sqrt(((area(j))./(4.*pi)));
+
+B(i,j) = 0;
+end
+end
+end
+
+A
+B
+% This is were the magic happens
+uga = sum(transpose(B));
+buga = (eye(length(uga))).*uga;
+ongo = eye(length(uga))*0.5;
+bongo = ongo+buga;
+B=B-bongo;
+
+N % This value is incorrect for the prism model
+phi_0 = (-E_0)*(F(1,:)); % Change orientation of E-field
+Id = eye(N);
+vec = zeros(N,1);
+eps = eps_Ag; % Change material here
+
+Nsteps = length(eps);
+
+for x=1:Nsteps
+    Solution{x} = inv([(0.5.*Id-B) A;(0.5.*Id+B) -(((eps_water)./(eps(x))).*A)])*[(transpose(phi_0));vec];
+end
+Solution_mat = cell2mat(Solution);
+barphi = Solution_mat((1:N),(1:Nsteps));
+barpsi = Solution_mat(((N+1):(2*N)),(1:Nsteps));
+psi_phi_area = (transpose(F(4,(1:N)))).*(conj(barpsi)).*barphi;
+SumFinal = sum(psi_phi_area,1) ;
+
+for steps = 1:Nsteps
+    C_abs(steps) = 2.*pi.*imag(eps(steps)).*real(conj((eps_water)/(eps(steps))) ...
+        .*SumFinal(1,steps)).*((wavelength(steps).*n_water.*(abs(E_0))^2)^(-1));
+end 
+
+plot(wavelength*10^9,C_abs,'LineWidth',1.3)
+hold on
+xlabel('Wavelength [nm]')
+ylabel('Absorption')
+hold off
