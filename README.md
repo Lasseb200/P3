@@ -11,3 +11,5 @@
 notes: Choose between gold or silver nanoparticles by choosing permitivitty on line 61 in the absorption calculation code, the direction of the E-field is chosen on line 58. The prism model can be rotated on line 278 in its source code.
 
 ### Linear expansion
+  1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
+  2. Ensure that the MATLAB add-on 'Partial Differential Equation Toolbox' is installed.
