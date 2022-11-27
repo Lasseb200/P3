@@ -3,7 +3,7 @@ The code is written in plain text, and is meant to be copy/pasted into the MATLA
 ## Analytical model for spherical nanoparticles
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
   2. Run the absorption calculation.
-## Finite element method (numerical)
+## Finite element method
 ### Pulse expansion:
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
   2. Run the 3D model for either spheres, cylinders or prisms.
