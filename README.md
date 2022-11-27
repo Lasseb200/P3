@@ -1,5 +1,6 @@
-# MATLAB-finite-element-method
+# Synthesis of gold & silver nanoparticles and modelling of their optical properties with alternating morphologies using finite element method
 
+## Finite element method
 ### Pulse expansion:
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
   2. Run the 3D model for either spheres, cylinders or prisms.
