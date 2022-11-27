@@ -1,0 +1,38 @@
+a= 5; % Radius
+n1=1.33; % Refractive index of water
+eps1=n1^2; % Permittivity of water
+img = sqrt(-1);
+load nrau.m
+load nrag.m
+load niau.m
+load niag.m
+data = [nrag niag(:,2) nrau(:,2) niau(:,2)];
+wavelength_micrometer = (data(:,1));
+wl = (10^-6).*wavelength_micrometer; %wavelength in metres
+wavelength = linspace(300*10^(-9),900*10^(-9),400);
+n_data_Ag = data(:,2);
+k_data_Ag = data(:,3);
+n_data_Au = data(:,4);
+k_data_Au = data(:,5);
+n_Au = interp1(wl,n_data_Au,wavelength,'makima');
+k_Au = interp1(wl,k_data_Au,wavelength,'makima');
+n_Ag = interp1(wl,n_data_Ag,wavelength,'makima');
+k_Ag = interp1(wl,k_data_Ag,wavelength,'makima');
+eps_Ag = (n_Ag+img.*k_Ag).^2;
+eps_Au = (n_Au+img.*k_Au).^2;
+eps_real_Ag = (n_Ag).^2-(k_Ag).^2; %Real part of the relaticve permitivity of Ag
+eps_imaginary_Ag = 2.*(n_Ag).*(k_Ag); %Imaginary part of the relaticve permitivity of Ag
+eps_real_Au = (n_Au).^2-(k_Au).^2; %Real part of the relaticve permitivity of Au
+eps_imaginary_Au = 2.*(n_Au).*(k_Au); %Imaginary part of the relaticve permitivity of Au
+for j=1:length(wavelength)
+Cabs_Ag(j)=((24*pi^2*a^3)/(wavelength(j)*10^3))*((eps_imaginary_Ag(j)*eps1^(3/2))/((eps_real_Ag(j)+2*eps1)^2+(eps_imaginary_Ag(j))^2));
+Cabs_Au(j)=((24*pi^2*a^3)/(wavelength(j)*10^3))*((eps_imaginary_Au(j)*eps1^(3/2))/((eps_real_Au(j)+2*eps1)^2+(eps_imaginary_Au(j))^2));
+end
+plot(wavelength*10^9,Cabs_Ag)
+title ('Absorption cross section for speherical Ag-nanoparticles')
+xlabel('Wavelength [nm]')
+ylabel('Absorption cross section [nm^2]')
+plot(wavelength*10^9,Cabs_Au)
+title ('Absorption cross section for speherical Au-nanoparticles')
+xlabel('Wavelength [nm]')
+ylabel('Absorption cross section [nm^2]')
