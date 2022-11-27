@@ -1,7 +1,7 @@
 clear all
-N=25; % Regulate number of points
-L=40; % Length
-R=5; % Radius
+N=10;
+L=40;
+R=5;
 
 %**********************************
 %***** Top / bottom triangles 
@@ -20,12 +20,17 @@ for i=1:N; % for loop creating the first square
         y(n) = j*(LH/N);
         z(n) = R;
         area_top(n) = (0.5*LL*LH)/(0.5*N^2); % area assigned to every point. Please note, that this is a fairly crude estimation, that becomes increasingly more inaccurate with fewer points.
-
+        x_norm_top(n) = 0;
+        y_norm_top(n) = 0;
+        z_norm_top(n) = 1;
         if y(n)>tan(pi/3)*x(n) % removes positions outside of the triangle
-            x(n) = 0;
-            y(n) = 0;
-            z(n) = 0;
-            area_top(n) = 0;
+            x(n) = NaN;
+            y(n) = NaN;
+            z(n) = NaN;
+            area_top(n) = NaN;
+            x_norm_top(n) = NaN;
+            y_norm_top(n) = NaN;
+            z_norm_top(n) = NaN;
             n=n+1;
         else
             n=n+1;
@@ -39,11 +44,17 @@ for i=1:N; % for loop creating the second square
         y(n) = j*(LH/N);
         z(n) = R;
         area_top(n) = (0.5*LL*LH)/(0.5*N^2);
+        x_norm_top(n) = 0;
+        y_norm_top(n) = 0;
+        z_norm_top(n) = 1;
         if y(n)>tan(pi/3)*(LL-(x(n)-LL))
-            x(n) = 0;
-            y(n) = 0;
-            z(n) = 0;
-            area_top(n) = 0;
+            x(n) = NaN;
+            y(n) = NaN;
+            z(n) = NaN;
+            area_top(n) = NaN;
+            x_norm_top(n) = NaN;
+            y_norm_top(n) = NaN;
+            z_norm_top(n) = NaN;
             n=n+1;
         else
             n=n+1;
@@ -52,7 +63,7 @@ for i=1:N; % for loop creating the second square
     end
 end
 S_top = [x;y;z]; % surface matrix
-norm_top = [zeros(1,length(S_top),1);zeros(1,length(S_top),1);ones(1,length(S_top),1)];
+norm_top = [x_norm_top;y_norm_top;z_norm_top];
 clear x y z
 % Bottom:
 n=1;
@@ -62,11 +73,17 @@ for i=1:N;
         y(n) = j*(LH/N);
         z(n) = -R;
         area_bottom(n) = (0.5*LL*LH)/(0.5*N^2);
+        x_norm_bottom(n) = 0;
+        y_norm_bottom(n) = 0;
+        z_norm_bottom(n) = -1;
         if y(n)>tan(pi/3)*x(n)
-            x(n) = 0;
-            y(n) = 0;
-            z(n) = 0;
-            area_bottom(n) = 0;
+            x(n) = NaN;
+            y(n) = NaN;
+            z(n) = NaN;
+            area_bottom(n) = NaN;
+            x_norm_bottom(n) = NaN;
+            y_norm_bottom(n) = NaN;
+            z_norm_bottom(n) = NaN;
             n=n+1;
         else
             n=n+1;
@@ -80,11 +97,17 @@ for i=1:N;
         y(n) = j*(LH/N);
         z(n) = -R;
         area_bottom(n) = (0.5*LL*LH)/(0.5*N^2);
+        x_norm_bottom(n) = 0;
+        y_norm_bottom(n) = 0;
+        z_norm_bottom(n) = -1;
         if y(n)>tan(pi/3)*(LL-(x(n)-LL))
-            x(n) = 0;
-            y(n) = 0;
-            z(n) = 0;
-            area_bottom(n) = 0;
+            x(n) = NaN;
+            y(n) = NaN;
+            z(n) = NaN;
+            area_bottom(n) = NaN;
+            x_norm_bottom(n) = NaN;
+            y_norm_bottom(n) = NaN;
+            z_norm_bottom(n) = NaN;
             n=n+1;
         else
             n=n+1;
@@ -93,7 +116,7 @@ for i=1:N;
     end
 end
 S_bottom= [x;y;z];
-norm_bottom = [zeros(1,length(S_bottom),1);zeros(1,length(S_bottom),1);-ones(1,length(S_bottom),1)];
+norm_bottom = [x_norm_bottom;y_norm_bottom;z_norm_bottom];
 clear x y z
 
 %**********************************
@@ -123,6 +146,7 @@ norm_cyl_1 = [x_norm_cyl;y_norm_cyl;z_norm_cyl];
 % 60 degree transformation
 angle = 1/3; % Divided by pi, since cospi/sinpi is used.
 S_cyl_1 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[S_cyl_1] + [LL*0.5;0.5*LH;0];
+norm_cyl_1 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[norm_cyl_1];
 clear x y z
 
 % Side 2:
@@ -244,12 +268,19 @@ S = [S_top S_bottom S_cyl_1 S_cyl_2 S_cyl_3 S_corner_1 S_corner_2 S_corner_3];
 norm = [norm_top norm_bottom norm_cyl_1 norm_cyl_2 norm_cyl_3 norm_corner_1 norm_corner_2 norm_corner_3];
 area = [area_top area_bottom area_cyl_1 area_cyl_2 area_cyl_3 area_corner_1 area_corner_2 area_corner_3];
 
-F = [S;area;norm]; % Function describing the entire model.
+F = [S;area;norm];
+without_NaN = rmmissing(transpose(F));
+F = transpose(without_NaN) % Function describing the entire model.
+area = F(4,:)
 
-N = length(S)-empty_counter
+% Here, the prism can be rotated around the z-axis by any angle.
+angle = 2;
+F = [cospi(angle) -sinpi(angle) 0 0 0 0 0;sinpi(angle) cospi(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cospi(angle) -sinpi(angle) 0; 0 0 0 0 sinpi(angle) cospi(angle) 0;0 0 0 0 0 0 1]*F
+
+N = length(F)
 plot3(S(1,:),S(2,:),S(3,:),'k.')
 hold on
-set(gca,'visible','off') % Axis on/off
+%set(gca,'visible','off') % Axis on/off
 axis image
 hold off
 
