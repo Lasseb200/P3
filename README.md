@@ -1,4 +1,4 @@
-# Synthesis of gold & silver nanoparticles and modelling of their optical properties with alternating morphologies using finite element method
+# Modelling of the optical properties of gold & silver nanoparticles with alternating morphologies using finite element method
 The code is written in plain text, and is meant to be copy/pasted into the MATLAB editor. Only the '.m' files containing refractive indices have to be installed.
 ## Analytical model for spherical nanoparticles
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
