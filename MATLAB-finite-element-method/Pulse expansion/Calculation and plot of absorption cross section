@@ -45,8 +45,6 @@ end
 end
 end
 
-A
-B
 % This is were the magic happens
 uga = sum(transpose(B));
 buga = (eye(length(uga))).*uga;
