@@ -13,5 +13,6 @@ notes: Choose between gold or silver nanoparticles by choosing permitivitty on l
 
 ![3D_point_model_of_prism](3D_point_model_of_prism.png) ![Ag_rods_plot](Ag_rods_plot.png)
 ### Linear expansion (WIP)
+disclaimer: The code used in the linear expansion model is based on code from supervisor Thomas Søndergaard, used in his book *Green's Function Integral Equation Methods in Nano-optics*.
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
   2. Ensure that the MATLAB add-on '[Partial Differential Equation Toolbox](https://se.mathworks.com/products/pde.html)' is installed.
