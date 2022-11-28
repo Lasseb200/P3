@@ -1,0 +1,31 @@
+clear all
+R = 5;
+N_phi = 20;
+N_theta = N_phi/2;
+N = N_theta*N_phi
+n = 1;
+for i_theta = 1:N_theta
+for i_phi = 1:N_phi
+phi_i = (i_phi-0.5)*((2*pi)/(N_phi));
+theta_i = (i_theta-0.5)*((pi)/N_theta);
+area_i(n) = ((2*pi*(R^2))/(N_phi))*(cos(theta_i-(pi)/(2*N_theta))-cos(theta_i+(pi)/(2*N_theta)));
+x(n)= sin(theta_i)*cos(phi_i);
+y(n)= sin(theta_i)*sin(phi_i);
+z(n)= cos(theta_i);
+n=n+1;
+end
+end
+surface = R.*[(x);(y);(z)];
+r_norm = (surface)./R;
+area = area_i;
+F = [surface;area;r_norm];
+plot3(surface(1,:),surface(2,:),surface(3,:),'k.')
+hold on
+set(gca,'visible','off')
+axis equal
+hold off
+quiver3(F(1,:),F(2,:),F(3,:),F(5,:),F(6,:),F(7,:),'k')
+hold on
+set(gca,'visible','off')
+axis equal
+hold off
