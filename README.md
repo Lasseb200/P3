@@ -1,7 +1,7 @@
 # Modelling of the optical properties of gold & silver nanoparticles with alternating morphologies using finite element method
 The code is written in plain text, and is meant to be copy/pasted into the MATLAB editor. Only the '.m' files containing refractive indices have to be installed.
 ## Analytical model for spherical nanoparticles
-  1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
+  1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in MATLAB folder.
   2. Run the [absorption calculation code](https://github.com/Lasseb200/P3/blob/main/MATLAB%20Analytical%20model%20for%20spherical%20nanoparticles).
 ## Finite element method
 ### Pulse expansion:
