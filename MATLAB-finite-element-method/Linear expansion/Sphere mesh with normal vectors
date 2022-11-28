@@ -1,3 +1,5 @@
+% The following script is based on code created by supervisor Thomas Søndergaard. 
+
 clear all; close all
 
 N = 6 
