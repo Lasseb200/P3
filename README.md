@@ -2,7 +2,7 @@
 The code is written in plain text, and is meant to be copy/pasted into the MATLAB editor. Only the '.m' files containing refractive indices have to be installed.
 ## Analytical model for spherical nanoparticles
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in matlab folder.
-  2. Run the absorption calculation code. [link](MATLAB Analytical model for spherical nanoparticles)
+  2. Run the absorption calculation code. [link](MATLAB Analytical model for spherical nanoparticles.md)
 ## Finite element method
 ### Pulse expansion:
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
