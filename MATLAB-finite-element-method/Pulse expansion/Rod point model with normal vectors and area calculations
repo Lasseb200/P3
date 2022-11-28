@@ -1,0 +1,102 @@
+clear all
+R=5; % RAdius
+L=15; % Length
+N_phi = 15; % Change number of points
+N_theta = N_phi/2;
+N_cyl_z=(L*N_phi)/(pi*R);
+%Cylindrical part
+n=1;
+for p_cyl_z=1:N_cyl_z
+    for p_cyl_r=1:N_phi
+        phi=((2*pi)/N_phi)*(p_cyl_r-0.5);    
+        x_cyl(n)=R*cos(phi);
+        y_cyl(n)=R*sin(phi);
+        z_cyl(n) = -L+(L/N_cyl_z)+(2*L/N_cyl_z)*((-1/2)+p_cyl_z);
+        y_norm_cyl(n)=sin(phi);
+        x_norm_cyl(n)=cos(phi);
+        z_norm_cyl(n)=0;
+        %area_cyl(n) = (4*pi*R^2)/(N_phi*N_cyl_z);
+        area_cyl(n) = (2*pi^2*R^2)/(N_phi^2);
+        n=n+1;
+    end
+end
+Positions_cyl = [(x_cyl);(y_cyl);(z_cyl)];
+Norm_vec_cyl = [(x_norm_cyl);(y_norm_cyl);(z_norm_cyl)];
+%Spherical part:
+n2=1;
+for p_phi=1:N_phi/4
+   for p_theta=1:N_theta  
+      theta = ((pi)/N_theta)*(p_theta - 0.5);
+        phi2 = ((2*pi)/N_phi)*(p_phi - 0.5);
+        x_sph(n2)=R*cos(theta);
+        y_sph(n2)=R*sin(theta)*sin(phi2);
+        z_sph(n2)=R*sin(theta)*cos(phi2)+L-(L/(N_cyl_z*2));
+        x_norm_sph(n2)=cos(theta);
+        y_norm_sph(n2)=sin(theta)*sin(phi2);
+        z_norm_sph(n2)=sin(theta)*cos(phi2);
+        area_sph(n2) = (R^2)*((2*pi)/N_phi)*(cos(theta - (pi/(2*N_theta)))-cos(theta + (pi/(2*N_theta))));
+        n2=n2+1;
+    end
+end
+for p_phi=1:N_phi/4
+   for p_theta=1:N_theta
+      theta = ((pi)/N_theta)*(p_theta - 0.5);
+        phi2 = ((2*pi)/N_phi)*(p_phi - 0.5);
+        x_sph(n2)=R*cos(theta);
+        y_sph(n2)=(-1)*R*sin(theta)*sin(phi2);
+        z_sph(n2)=R*sin(theta)*cos(phi2)+L-(L/(N_cyl_z*2));
+        x_norm_sph(n2)=cos(theta);
+        y_norm_sph(n2)=(-1)*sin(theta)*sin(phi2);
+        z_norm_sph(n2)=sin(theta)*cos(phi2);
+        area_sph(n2) = (R^2)*((2*pi)/N_phi)*(cos(theta - (pi/(2*N_theta)))-cos(theta + (pi/(2*N_theta))));
+        n2=n2+1;
+    end
+end
+for p_phi=1:N_phi/4
+   for p_theta=1:N_theta
+      theta = ((pi)/N_theta)*(p_theta - 0.5);
+        phi2 = ((2*pi)/N_phi)*(p_phi - 0.5);
+        x_sph(n2)=R*cos(theta);
+        y_sph(n2)=R*sin(theta)*sin(phi2);
+        z_sph(n2)=(-1)*R*sin(theta)*cos(phi2)-L+4*(L/(N_cyl_z*2));
+        x_norm_sph(n2)=cos(theta);
+        y_norm_sph(n2)=sin(theta)*sin(phi2);
+        z_norm_sph(n2)=(-1)*sin(theta)*cos(phi2);
+        area_sph(n2) = (R^2)*((2*pi)/N_phi)*(cos(theta - (pi/(2*N_theta)))-cos(theta + (pi/(2*N_theta))));
+        n2=n2+1;
+    end
+end
+for p_phi=1:N_phi/4
+   for p_theta=1:N_theta
+      theta = ((pi)/N_theta)*(p_theta - 0.5);
+        phi2 = ((2*pi)/N_phi)*(p_phi - 0.5);
+        x_sph(n2)=R*cos(theta);
+        y_sph(n2)=(-1)*R*sin(theta)*sin(phi2);
+        z_sph(n2)=(-1)*R*sin(theta)*cos(phi2)-L+4*(L/(N_cyl_z*2));
+        x_norm_sph(n2)=cos(theta);
+        y_norm_sph(n2)=(-1)*sin(theta)*sin(phi2);
+        z_norm_sph(n2)=(-1)*sin(theta)*cos(phi2);
+        area_sph(n2) = (R^2)*((2*pi)/N_phi)*(cos(theta - (pi/(2*N_theta)))-cos(theta + (pi/(2*N_theta))));
+        n2=n2+1;
+    end
+end
+N = n+n2-2 % -2 since n=1 to begin with and n=2 at first position. (for both n and n2)
+Vec_sph = [x_sph;y_sph;z_sph];
+Norm_vec_sph = [x_norm_sph;y_norm_sph;z_norm_sph];
+x=[x_cyl x_sph];
+y=[y_cyl y_sph];
+z=[z_cyl z_sph];
+area=[area_cyl area_sph];
+positions = [(x);(y);(z)];
+plot3(x,y,z,'k.')
+hold on
+set(gca,'visible','off')
+axis equal
+hold off
+Norm_vec = [Norm_vec_cyl Norm_vec_sph];
+F = [(positions);(area);(Norm_vec)]; % Final function
+quiver3(F(1,:),F(2,:),F(3,:),F(5,:),F(6,:),F(7,:),'k')
+hold on
+set(gca,'visible','off')
+axis equal
+hold off
