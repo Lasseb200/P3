@@ -1,291 +1,109 @@
 clear all
-N=25;
-L=40;
-R=5;
+N_sph = 5;
+R = 5;
+H = 5+1.5;
+HT=sqrt(3)/2*H;
+rotate=true; 
+
+circumference = pi/2; % Choose circumference of sphere
+angle = 0.5*circumference;
 
 %**********************************
-%***** Top / bottom triangles 
+%***** Plot geometry
 %**********************************
-NH = N*cos(pi/6);
-NL = 0.5*N;
-LH = cos(pi/6)*L;
-LL= 0.5*L;
-empty_counter = 0;
-
-% Top:
-n=1;
-for i=1:N; % for loop creating the first square
-    for j=1:N;
-        x(n) = i*(LL/N);
-        y(n) = j*(LH/N);
-        z(n) = R;
-        area_top(n) = (0.5*LL*LH)/(0.5*N^2); % area assigned to every point. Please note, that this is a fairly crude estimation, that becomes increasingly more inaccurate with fewer points.
-        x_norm_top(n) = 0;
-        y_norm_top(n) = 0;
-        z_norm_top(n) = 1;
-        if y(n)>tan(pi/3)*x(n) % removes positions outside of the triangle
-            x(n) = NaN;
-            y(n) = NaN;
-            z(n) = NaN;
-            area_top(n) = NaN;
-            x_norm_top(n) = NaN;
-            y_norm_top(n) = NaN;
-            z_norm_top(n) = NaN;
-            n=n+1;
-        else
-            n=n+1;
-            empty_counter=empty_counter+1;
-        end
-    end
+for j=1:N_sph % Left
+    t1a=pi/2*R/2*(j-1)/N_sph;
+    t2a=-angle*R/2*sin(2*t1a/R);
+    t1b=pi/2*R/2*(j)/N_sph;
+    t2b=-angle*R/2*sin(2*t1b/R);
+    row=[2 t2a t2b t1a t1b 1 0];
+    A(j,:)=row;
+    plot(t2a,t1a,'k*'); % Color can be changed to highlight what each loop is plotting
+    hold on
 end
-for i=1:N; % for loop creating the second square
-    for j=1:N;
-        x(n) = LL+i*(LL/N);
-        y(n) = j*(LH/N);
-        z(n) = R;
-        area_top(n) = (0.5*LL*LH)/(0.5*N^2);
-        x_norm_top(n) = 0;
-        y_norm_top(n) = 0;
-        z_norm_top(n) = 1;
-        if y(n)>tan(pi/3)*(LL-(x(n)-LL))
-            x(n) = NaN;
-            y(n) = NaN;
-            z(n) = NaN;
-            area_top(n) = NaN;
-            x_norm_top(n) = NaN;
-            y_norm_top(n) = NaN;
-            z_norm_top(n) = NaN;
-            n=n+1;
-        else
-            n=n+1;
-            empty_counter=empty_counter+1;
-        end
-    end
+for j=1:N_sph % Top
+    t1a=pi/2*R/2; t1b=t1a;
+    t2a=-angle*R/2+2*angle*R/2*(j-1)/N_sph;
+    t2b=-angle*R/2+2*angle*R/2*(j)/N_sph;
+    row=[2 t2a t2b t1a t1b 1 0];
+    A(j+N_sph,:)=row;
+    plot(t2a,t1a,'r*'); 
 end
-S_top = [x;y;z]; % surface matrix
-norm_top = [x_norm_top;y_norm_top;z_norm_top];
-clear x y z
-% Bottom:
-n=1;
-for i=1:N;
-    for j=1:N;
-        x(n) = i*(LL/N);
-        y(n) = j*(LH/N);
-        z(n) = -R;
-        area_bottom(n) = (0.5*LL*LH)/(0.5*N^2);
-        x_norm_bottom(n) = 0;
-        y_norm_bottom(n) = 0;
-        z_norm_bottom(n) = -1;
-        if y(n)>tan(pi/3)*x(n)
-            x(n) = NaN;
-            y(n) = NaN;
-            z(n) = NaN;
-            area_bottom(n) = NaN;
-            x_norm_bottom(n) = NaN;
-            y_norm_bottom(n) = NaN;
-            z_norm_bottom(n) = NaN;
-            n=n+1;
-        else
-            n=n+1;
-            empty_counter=empty_counter+1;
-        end
-    end
+for j=1:N_sph % Right
+    t1a=pi/2*R/2*(N_sph-j+1)/N_sph;
+    t2a=angle*R/2*sin(2*t1a/R);
+    t1b=pi/2*R/2*(N_sph-j)/N_sph;
+    t2b=angle*R/2*sin(2*t1b/R);
+    row=[2 t2a t2b t1a t1b 1 0];
+    A(j+2*N_sph,:)=row;
+    plot(t2a,t1a,'b*'); 
 end
-for i=1:N;
-    for j=1:N;
-        x(n) = LL+i*(LL/N);
-        y(n) = j*(LH/N);
-        z(n) = -R;
-        area_bottom(n) = (0.5*LL*LH)/(0.5*N^2);
-        x_norm_bottom(n) = 0;
-        y_norm_bottom(n) = 0;
-        z_norm_bottom(n) = -1;
-        if y(n)>tan(pi/3)*(LL-(x(n)-LL))
-            x(n) = NaN;
-            y(n) = NaN;
-            z(n) = NaN;
-            area_bottom(n) = NaN;
-            x_norm_bottom(n) = NaN;
-            y_norm_bottom(n) = NaN;
-            z_norm_bottom(n) = NaN;
-            n=n+1;
-        else
-            n=n+1;
-            empty_counter=empty_counter+1;
-        end
-    end
-end
-S_bottom= [x;y;z];
-norm_bottom = [x_norm_bottom;y_norm_bottom;z_norm_bottom];
-clear x y z
-
-%**********************************
-%***** Cylindrical sides
-%**********************************
-L_cyl = LL;
-N_phi = N;
-N_cyl_z = (N*N_phi)/(pi*R);
-
-% Side 1:
-n=1;
-for p_cyl_z=1:N_cyl_z
-    for p_cyl_r=1:(N_phi*0.5)
-        phi=((2*pi)/N_phi)*(p_cyl_r-0.5);    
-        z(n)=R*cos(phi);
-        y(n)=R*sin(phi);
-        x(n) = -L_cyl+(L_cyl/N_cyl_z)+(2*L_cyl/N_cyl_z)*((-1/2)+p_cyl_z);
-        y_norm_cyl(n)=sin(phi);
-        z_norm_cyl(n)=cos(phi);
-        x_norm_cyl(n)=0;
-        area_cyl_1(n) =(2*pi*R*L)/(N_phi*N_cyl_z); % Also increasingly inaccurate with fewer points.
-        n=n+1;
-    end
-end
-S_cyl_1 = [x;y;z];
-norm_cyl_1 = [x_norm_cyl;y_norm_cyl;z_norm_cyl];
-% 60 degree transformation
-angle = 1/3; % Divided by pi, since cospi/sinpi is used.
-S_cyl_1 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[S_cyl_1] + [LL*0.5;0.5*LH;0];
-norm_cyl_1 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[norm_cyl_1];
-clear x y z
-
-% Side 2:
-n = 1;
-for p_cyl_z=1:N_cyl_z
-    for p_cyl_r=1:(N_phi*0.5)
-        phi=((2*pi)/N_phi)*(p_cyl_r-0.5);    
-        z(n)=R*cos(phi);
-        y(n)=R*sin(phi);
-        x(n) = -L_cyl+(L_cyl/N_cyl_z)+(2*L_cyl/N_cyl_z)*((-1/2)+p_cyl_z);
-        y_norm_cyl(n)=sin(phi);
-        z_norm_cyl(n)=cos(phi);
-        x_norm_cyl(n)=0;
-        area_cyl_2(n) =(2*pi*R*L)/(N_phi*N_cyl_z);
-        n=n+1;
-    end
-end
-S_cyl_2 = [x;y;z];
-norm_cyl_2 = [x_norm_cyl;y_norm_cyl;z_norm_cyl];
-% 300 degree transformation
-angle = 5/3;
-S_cyl_2 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[S_cyl_2]+[LL*1.5;LH*0.5;0];
-norm_cyl_2 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[norm_cyl_2];
-clear x y z
-
-% Side 3:
-n = 1;
-for p_cyl_z=1:N_cyl_z
-    for p_cyl_r=1:(N_phi*0.5)
-        phi=((2*pi)/N_phi)*(p_cyl_r-0.5);    
-        z(n)=R*cos(phi);
-        y(n)=R*sin(phi);
-        x(n) = -L_cyl+(L_cyl/N_cyl_z)+(2*L_cyl/N_cyl_z)*((-1/2)+p_cyl_z);
-        y_norm_cyl(n)=sin(phi);
-        z_norm_cyl(n)=cos(phi);
-        x_norm_cyl(n)=0;
-        area_cyl_3(n) = (2*pi*R*L)/(N_phi*N_cyl_z);
-        n=n+1;
-    end
-end
-S_cyl_3 = [x;y;z];
-norm_cyl_3 = [x_norm_cyl;y_norm_cyl;z_norm_cyl];
-% 180 degree transformation
-angle = 1;
-S_cyl_3 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[S_cyl_3] + [LL;0.3;0];
-norm_cyl_3 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0; 0 0 1]*[norm_cyl_3];
-clear x y z
-
-%**********************************
-%***** Spherical corners
-%**********************************
-N_phi = N;
-N_theta = N_phi*0.5;
-
-% Corner 1 (top)
-n = 1;
-for i_theta = 1:N_theta
-    for i_phi = 1:N_phi/3
-        phi_i = (i_phi-0.5)*((2*pi)/(N_phi));
-        theta_i = (i_theta-0.5)*((pi)/N_theta);
-        area_corner_1(n) = ((2*pi*(R^2))/(N_phi))*(cos(theta_i-(pi)/(2*N_theta))-cos(theta_i+(pi)/(2*N_theta))); % Also increasingly inaccurate with fewer points, but not as large of an error.
-        x(n)= sin(theta_i)*cos(phi_i);
-        y(n)= sin(theta_i)*sin(phi_i);
-        z(n)= cos(theta_i);
-        n=n+1;
-    end
-end
-S_corner_1 = R.*[x;y;z];
-% 30 degree transformation
-angle = 1/6;
-S_corner_1 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0;0 0 1]*[S_corner_1]+[LL;LH-0.6;0];
-norm_corner_1 = [S_corner_1(1,:)-LL;S_corner_1(2,:)-LH;S_corner_1(3,:)]./R;
-clear x y z
-
-% Corner 2 (left)
-n = 1;
-for i_theta = 1:N_theta
-    for i_phi = 1:N_phi/3
-        phi_i = (i_phi-0.5)*((2*pi)/(N_phi));
-        theta_i = (i_theta-0.5)*((pi)/N_theta);
-        area_corner_2(n) = ((2*pi*(R^2))/(N_phi))*(cos(theta_i-(pi)/(2*N_theta))-cos(theta_i+(pi)/(2*N_theta)));
-        x(n)= sin(theta_i)*cos(phi_i);
-        y(n)= sin(theta_i)*sin(phi_i);
-        z(n)= cos(theta_i);
-        n=n+1;
-    end
-end
-S_corner_2 = R.*[x;y;z];
-% 150 degree transformation
-angle = 5/6;
-S_corner_2 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0;0 0 1]*[S_corner_2]+[0.3;0.3;0];
-norm_corner_2 = [S_corner_2(1,:)-0.3;S_corner_2(2,:)-0.3;S_corner_2(3,:)]./R;
-clear x y z
-
-% Corner 3 (right)
-n = 1;
-for i_theta = 1:N_theta
-    for i_phi = 1:N_phi/3
-        phi_i = (i_phi-0.5)*((2*pi)/(N_phi));
-        theta_i = (i_theta-0.5)*((pi)/N_theta);
-        area_corner_3(n) = ((2*pi*(R^2))/(N_phi))*(cos(theta_i-(pi)/(2*N_theta))-cos(theta_i+(pi)/(2*N_theta)));
-        x(n)= sin(theta_i)*cos(phi_i);
-        y(n)= sin(theta_i)*sin(phi_i);
-        z(n)= cos(theta_i);
-        n=n+1;
-    end
-end
-S_corner_3 = R.*[x;y;z];
-% 270 degree transformation
-angle = 3/2;
-S_corner_3 = [cospi(angle) -sinpi(angle) 0; sinpi(angle) cospi(angle) 0;0 0 1]*[S_corner_3]+[L-0.3;0.3;0];
-norm_corner_3 = [S_corner_3(1,:)-L+0.3;S_corner_3(2,:)-0.3;S_corner_3(3,:)]./R;
-clear x y z
-
-%**********************************
-%***** Final function
-%**********************************
-S = [S_top S_bottom S_cyl_1 S_cyl_2 S_cyl_3 S_corner_1 S_corner_2 S_corner_3];
-norm = [norm_top norm_bottom norm_cyl_1 norm_cyl_2 norm_cyl_3 norm_corner_1 norm_corner_2 norm_corner_3];
-area = [area_top area_bottom area_cyl_1 area_cyl_2 area_cyl_3 area_corner_1 area_corner_2 area_corner_3];
-
-F = [S;area;norm];
-without_NaN = rmmissing(transpose(F));
-F = transpose(without_NaN); % Function describing the entire model.
-area = F(4,:);
-
-% Here, the prism can be rotated around the z-axis by any angle.
-angle = 2;
-F = [cospi(angle) -sinpi(angle) 0 0 0 0 0;sinpi(angle) cospi(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cospi(angle) -sinpi(angle) 0; 0 0 0 0 sinpi(angle) cospi(angle) 0;0 0 0 0 0 0 1]*F;
-
-N = length(F)
-plot3(S(1,:),S(2,:),S(3,:),'k.')
-hold on
-set(gca,'visible','off') % Axis on/off
 axis image
 hold off
 
-quiver3(F(1,:),F(2,:),F(3,:),F(5,:),F(6,:),F(7,:),'k')
+%**********************************
+%***** Construct 2D mesh
+%**********************************
+hmax = 2; % Maximum distance between points.
+g_sph = transpose(A); % Geometry matrix
+[p e t]=initmesh(g_sph,'hmax',hmax);
+P_sph = p; % Matrix containing positions of every corner plotted.
+T_sph = t; % Matrix identifying which corners form a triangle. 
+h=pdemesh(p,e,t); % Plots the mesh
 hold on
-set(gca,'visible','off') % Axis on/off
+set(h,'linewidth',1,'color','k')
+plot(P_sph(1,:),P_sph(2,:),'r*') % Plots the triangle corners in red
+axis image
+hold off
+
+%**********************************
+%***** Transformation
+%**********************************
+ts=[];
+n = 0;
+for jflip=1:2
+        for j=1:length(p)
+            xc=0; yc=0; zc=0;
+            t2=p(1,j); t1=p(2,j);
+            if jflip==1
+                z=R/2*cos(2*t1/R);
+                zc=H;
+            else
+                z=-R/2*cos(2*t1/R);
+            end
+            x=R/2*sin(2*t1/R)*cos(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
+            y=R/2*sin(2*t1/R)*sin(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
+            if t1==0
+                x=0; y=0;
+            end
+            ps(1,j+n)=x;
+            ps(2,j+n)=y;
+            ps(3,j+n)=z;
+        end
+        td=zeros(7,length(t));
+        td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc; 
+        td(5,:)=0; td(6,:)=0; td(7,:)=0;
+        t2=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
+        ts=[ts t2];
+        n=n+length(p);
+    if jflip == 1
+        t_plot=ts;
+        p_plot=ps;
+    end 
+end    
+
+for k =1:length(t_plot(1,:))
+   r1=p_plot(:,t_plot(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
+   r2=p_plot(:,t_plot(2,k)); x2=r2(1); y2=r2(2); z2=r2(3);   
+   r3=p_plot(:,t_plot(3,k)); x3=r3(1); y3=r3(2); z3=r3(3);
+   % Defining the x/y/z-values of every line defining the triangle:
+   % Note: every triangle plot returns to its starting point. Therefore 4
+   % vectors are needed for every triangle.
+   xx(:,k)=[x1 x2 x3 x1]; 
+   yy(:,k)=[y1 y2 y3 y1];
+   zz(:,k)=[z1 z2 z3 z1];
+end
+fill3(xx,yy,zz,'w')
+hold on
 axis image
 hold off
