@@ -104,6 +104,3 @@ for k =1:length(t_plot(1,:))
 end
 axis image
 hold off
-
-
-
