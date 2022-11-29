@@ -4,7 +4,6 @@ R = 5;
 H = 5+1.5;
 HT=sqrt(3)/2*H;
 rotate=true; 
-
 circumference = pi/2; % Choose circumference of sphere
 angle = 0.5*circumference;
 
@@ -18,7 +17,13 @@ for j=1:N_sph % Left
     t2b=-angle*R/2*sin(2*t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j,:)=row;
-    plot(t2a,t1a,'k*'); % Color can be changed to highlight what each loop is plotting
+    plot(t2a,t1a,'r*'); % Color can be changed to highlight what each loop is plotting
+    hold on
+    set(gca,'fontsize',15)
+    xlabel('t_2')
+    ylabel('t_1')
+    hold off
+    
     hold on
 end
 for j=1:N_sph % Top
@@ -36,7 +41,7 @@ for j=1:N_sph % Right
     t2b=angle*R/2*sin(2*t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j+2*N_sph,:)=row;
-    plot(t2a,t1a,'b*'); 
+    plot(t2a,t1a,'r*'); 
 end
 axis image
 hold off
@@ -51,9 +56,12 @@ P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
 h=pdemesh(p,e,t); % Plots the mesh
 hold on
-set(h,'linewidth',1,'color','k')
+set(h,'linewidth',1.3,'color','k')
 plot(P_sph(1,:),P_sph(2,:),'r*') % Plots the triangle corners in red
 axis image
+xlabel('t_2')
+ylabel('t_1')
+set(gca,'fontsize',15)
 hold off
 
 %**********************************
@@ -103,7 +111,11 @@ for k =1:length(t_plot(1,:))
    yy(:,k)=[y1 y2 y3 y1];
    zz(:,k)=[z1 z2 z3 z1];
 end
-fill3(xx,yy,zz,'w')
+fill3(xx,yy,zz,'w','linewidth',1.3)
 hold on
+xlabel('x')
+ylabel('y')
+zlabel('z')
+set(gca,'fontsize',15)
 axis image
 hold off
