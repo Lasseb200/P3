@@ -1,61 +1,64 @@
 clear all
-SphSteps = 5;
+N_sph = 5;
 R = 5;
 H = 5+1.5;
 HT=sqrt(3)/2*H;
 rotate=true; 
-for j=1:SphSteps,
-    t1a=pi/2*R/2*(j-1)/SphSteps;
+for j=1:N_sph
+    t1a=pi/2*R/2*(j-1)/N_sph;
     t2a=-pi/3*R/2*sin(2*t1a/R);
-    t1b=pi/2*R/2*(j)/SphSteps;
+    t1b=pi/2*R/2*(j)/N_sph;
     t2b=-pi/3*R/2*sin(2*t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j,:)=row;
-    %plot(t2a,t1a,'k*');
-    %hold on
+    plot(t2a,t1a,'k*');
+    hold on
     %plot(t2b,t1b,'k*');
 end
-for j=1:SphSteps,
+for j=1:N_sph
     t1a=pi/2*R/2; t1b=t1a;
-    t2a=-pi/3*R/2+2*pi/3*R/2*(j-1)/SphSteps;
-    t2b=-pi/3*R/2+2*pi/3*R/2*(j)/SphSteps;
+    t2a=-pi/3*R/2+2*pi/3*R/2*(j-1)/N_sph;
+    t2b=-pi/3*R/2+2*pi/3*R/2*(j)/N_sph;
     row=[2 t2a t2b t1a t1b 1 0];
-    A(j+SphSteps,:)=row;
-    %plot(t2a,t1a,'r*'); 
+    A(j+N_sph,:)=row;
+    plot(t2a,t1a,'r*'); 
     %plot(t2b,t1b,'k*'); 
 end
-for j=1:SphSteps,
-    t1a=pi/2*R/2*(SphSteps-j+1)/SphSteps;
+for j=1:N_sph
+    t1a=pi/2*R/2*(N_sph-j+1)/N_sph;
     t2a=pi/3*R/2*sin(2*t1a/R);
-    t1b=pi/2*R/2*(SphSteps-j)/SphSteps;
+    t1b=pi/2*R/2*(N_sph-j)/N_sph;
     t2b=pi/3*R/2*sin(2*t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
-    A(j+2*SphSteps,:)=row;
-    %plot(t2a,t1a,'b*'); 
+    A(j+2*N_sph,:)=row;
+    plot(t2a,t1a,'b*'); 
     %plot(t2b,t1b,'k*');
 end
-%hold off
-hmax = 2; 
-
-%figure('name','1/8 sphere kinda')
-[p e t]=initmesh(A','hmax',hmax);
-p=[(p(1,:)) ; p(2,:) ];
-h=pdemesh(p,e,t);
+hold off
+hmax = 2; % Maximum distance between points.
+g_sph = transpose(A); % Geometry matrix
+[p e t]=initmesh(g_sph,'hmax',hmax);
+P_sph = p % Matrix containing positions of every corner plotted.
+T_sph = t % Matrix identifying which corners form a triangle. 
+h=pdemesh(p,e,t); % Plots the mesh
+hold on
 set(h,'linewidth',1,'color','k')
+plot(P_sph(1,:),P_sph(2,:),'r*') % Plots the triangle corners in red
 axis image
+hold off
 
 
 
-ps=[];
+%ps=[];
 ts=[];
-counter = 0;
-for jflip=1:2,
-    for jphi=1:1,
+n = 0;
+for jflip=1:2
+    for jphi=1:1
         phi=pi/2*(jphi-1);
-        for j=1:length(p),
+        for j=1:length(p)
             xc=0; yc=0; zc=0;
             t2=p(1,j); t1=p(2,j);
-            if jflip==1,
+            if jflip==1
                 z=R/2*cos(2*t1/R);
                 zc=H;
             else
@@ -63,12 +66,12 @@ for jflip=1:2,
             end
             x=R/2*sin(2*t1/R)*cos(t2/(R/2*sin(2*t1/R))-pi/4-pi/2+phi);
             y=R/2*sin(2*t1/R)*sin(t2/(R/2*sin(2*t1/R))-pi/4-pi/2+phi);
-            if t1==0,
+            if t1==0
                 x=0; y=0;
             end
-            ps(1,j+counter)=x;
-            ps(2,j+counter)=y;
-            ps(3,j+counter)=z;
+            ps(1,j+n)=x;
+            ps(2,j+n)=y;
+            ps(3,j+n)=z;
         end
         % 1: Denotes that the element is a part of a spherical surface.
         % xc, yc, zc: center of sphere
@@ -78,9 +81,9 @@ for jflip=1:2,
         td=zeros(7,length(t));
         td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc; 
         td(5,:)=0; td(6,:)=0; td(7,:)=0;
-        t2=[t(1,:)+counter;t(2,:)+counter;t(3,:)+counter;td]; 
+        t2=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
         ts=[ts t2];
-        counter=counter+length(p);
+        n=n+length(p);
     end
     if jflip == 1
         t_plot=ts;
