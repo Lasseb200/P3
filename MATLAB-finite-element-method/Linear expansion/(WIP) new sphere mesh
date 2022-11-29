@@ -10,39 +10,39 @@ angle = 0.5*circumference;
 %**********************************
 %***** Plot geometry
 %**********************************
-for j=1:N_sph % Left
-    t1a=pi/2*R/2*(j-1)/N_sph;
-    t2a=-angle*R/2*sin(2*t1a/R);
-    t1b=pi/2*R/2*(j)/N_sph;
-    t2b=-angle*R/2*sin(2*t1b/R);
+% Left:
+for j=1:N_sph 
+    t1a=pi/2*R*(j-1)/N_sph;
+    t2a=-angle*R*sin(t1a/R);
+    t1b=pi/2*R*(j)/N_sph;
+    t2b=-angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j,:)=row;
     plot(t2a,t1a,'r*'); % Color can be changed to highlight what each loop is plotting
     hold on
-    set(gca,'fontsize',15)
-    xlabel('t_2')
-    ylabel('t_1')
-    hold off
-    
-    hold on
 end
-for j=1:N_sph % Top
-    t1a=pi/2*R/2; t1b=t1a;
-    t2a=-angle*R/2+2*angle*R/2*(j-1)/N_sph;
-    t2b=-angle*R/2+2*angle*R/2*(j)/N_sph;
+% Top:
+for j=1:N_sph 
+    t1a=pi/2*R; t1b=t1a;
+    t2a=-angle*R+2*angle*R*(j-1)/N_sph;
+    t2b=-angle*R+2*angle*R*(j)/N_sph;
     row=[2 t2a t2b t1a t1b 1 0];
     A(j+N_sph,:)=row;
     plot(t2a,t1a,'r*'); 
 end
-for j=1:N_sph % Right
-    t1a=pi/2*R/2*(N_sph-j+1)/N_sph;
-    t2a=angle*R/2*sin(2*t1a/R);
-    t1b=pi/2*R/2*(N_sph-j)/N_sph;
-    t2b=angle*R/2*sin(2*t1b/R);
+% Right:
+for j=1:N_sph 
+    t1a=pi/2*R*(N_sph-j+1)/N_sph;
+    t2a=angle*R*sin(t1a/R);
+    t1b=pi/2*R*(N_sph-j)/N_sph;
+    t2b=angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j+2*N_sph,:)=row;
     plot(t2a,t1a,'r*'); 
 end
+set(gca,'fontsize',15)
+    xlabel('t_2')
+    ylabel('t_1')
 axis image
 hold off
 
@@ -74,13 +74,15 @@ for jflip=1:2
             xc=0; yc=0; zc=0;
             t2=p(1,j); t1=p(2,j);
             if jflip==1
-                z=R/2*cos(2*t1/R);
+                z=R*cos(t1/R);
                 zc=H;
             else
-                z=-R/2*cos(2*t1/R);
+                z=-R*cos(t1/R);
             end
-            x=R/2*sin(2*t1/R)*cos(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
-            y=R/2*sin(2*t1/R)*sin(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
+            x = cos(t2/(R*sin(t1/R)))*R*sin(t1/R);
+            y = sin(t2/(R*sin(t1/R)))*R*sin(t1/R);
+            %x=R/2*sin(2*t1/R)*cos(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
+            %y=R/2*sin(2*t1/R)*sin(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
             if t1==0
                 x=0; y=0;
             end
