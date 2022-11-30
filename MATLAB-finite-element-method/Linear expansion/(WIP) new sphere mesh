@@ -4,11 +4,11 @@ R = 5;
 H = 5+1.5;
 HT=sqrt(3)/2*H;
 rotate=true; 
-circumference = pi/2; % Choose circumference of sphere
+circumference = pi/2; % Choose circumference of initial sphere element
 angle = 0.5*circumference;
 
 %**********************************
-%***** Plot geometry
+%***** Create and plot geometry
 %**********************************
 % Left:
 for j=1:N_sph 
@@ -69,86 +69,56 @@ hold off
 %**********************************
 ts=[];
 n = 0;
-for jflip=1:2
-        for j=1:length(p)
-            xc=0; yc=0; zc=0;
-            t2=p(1,j); t1=p(2,j);
-            if jflip==1
-                z=R*cos(t1/R);
-                zc=H;
-            else
-                z=-R*cos(t1/R);
-            end
-            x = cos(t2/(R*sin(t1/R)))*R*sin(t1/R);
-            y = sin(t2/(R*sin(t1/R)))*R*sin(t1/R);
-            %x=R/2*sin(2*t1/R)*cos(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
-            %y=R/2*sin(2*t1/R)*sin(t2/(R/2*sin(2*t1/R))-pi/4-pi/2);
-            if t1==0
-                x=0; y=0;
-            end
-            ps(1,j+n)=x;
-            ps(2,j+n)=y;
-            ps(3,j+n)=z;
-        end
-        td=zeros(7,length(t));
-        td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc; 
-        td(5,:)=0; td(6,:)=0; td(7,:)=0;
-        t2=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
-        ts=[ts t2];
-        n=n+length(p);
-    if jflip == 1
-        t_plot=ts;
-        p_plot=ps;
-    end 
-end    
+xc=0;
+yc=0; 
+zc=H;
 
-for k =1:length(t_plot(1,:))
-   r1=p_plot(:,t_plot(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
-   r2=p_plot(:,t_plot(2,k)); x2=r2(1); y2=r2(2); z2=r2(3);   
-   r3=p_plot(:,t_plot(3,k)); x3=r3(1); y3=r3(2); z3=r3(3);
-   % Defining the x/y/z-values of every line defining the triangle:
-   % Note: every triangle plot returns to its starting point. Therefore 4
-   % vectors are needed for every triangle.
-   xx(:,k)=[x1 x2 x3 x1]; 
-   yy(:,k)=[y1 y2 y3 y1];
-   zz(:,k)=[z1 z2 z3 z1];
+for j=1:length(P_sph)
+    t2=P_sph(1,j); t1=P_sph(2,j);
+    z=R*cos(t1/R);
+    x = cos(t2/(R*sin(t1/R)))*R*sin(t1/R); % Transformation of x from t1,t2-plane
+    y = sin(t2/(R*sin(t1/R)))*R*sin(t1/R); % Transformation of y from t1,t2-plane
+    if t1==0 % To avoid division by 0
+        x=0; y=0;
+    end
+    ps(1,j+n)=x;
+    ps(2,j+n)=y;
+    ps(3,j+n)=z;
 end
-fill3(xx,yy,zz,'w','linewidth',1.3)
-hold on
-xlabel('x')
-ylabel('y')
-zlabel('z')
-set(gca,'fontsize',15)
-axis image
-hold off
 
-%**********************************
-%***** Rotations
-%**********************************
+td=zeros(7,length(t));
+td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc;
+t2=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
+ts=[ts t2];
+n=n+length(p);
+t_plot=ts;
+p_plot=ps;
+
 angle = pi/2;
-xx2 = xx.*cos(angle)-yy.*sin(angle);
-yy2 = xx.*sin(angle)+yy.*cos(angle);
-
-xx3 = xx2.*cos(angle)-yy2.*sin(angle);
-yy3 = xx2.*sin(angle)+yy2.*cos(angle);
-
-xx4 = xx3.*cos(angle)-yy3.*sin(angle);
-yy4 = xx3.*sin(angle)+yy3.*cos(angle);
-
-%**********************************
-%***** Plotting the sphere
-%**********************************
 % Top
-fill3(xx,yy,zz,'w','linewidth',1.3)
-hold on
-fill3(xx2,yy2,zz,'w','linewidth',1.3)
-fill3(xx3,yy3,zz,'w','linewidth',1.3)
-fill3(xx4,yy4,zz,'w','linewidth',1.3)
+ps2 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 1]*ps;
+ps3 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 1]*ps2;
+ps4 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 1]*ps3;
 % Bottom
-fill3(xx,yy,-zz,'w','linewidth',1.3)
-fill3(xx2,yy2,-zz,'w','linewidth',1.3)
-fill3(xx3,yy3,-zz,'w','linewidth',1.3)
-fill3(xx4,yy4,-zz,'w','linewidth',1.3)
+ps5 = [1 0 0;0 1 0;0 0 -1]*ps;
+ps6 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps;
+ps7 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps2;
+ps8 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps3;
+
+%**********************************
+%***** Retrieving x/y/z-values (in a not very pretty way)
+%**********************************
+P = [ps ps2 ps3 ps4 ps5 ps6 ps7 ps8]
+T = [ts ts+length(ps) ts+length(ps)*2 ts+length(ps)*3 ts+length(ps)*4 ts+length(ps)*5 ts+length(ps)*6 ts+length(ps)*7]
+clear x y z
+for k =1:length(T)
+   r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
+   r2=P(:,T(2,k)); x2=r2(1); y2=r2(2); z2=r2(3);   
+   r3=P(:,T(3,k)); x3=r3(1); y3=r3(2); z3=r3(3);
+   x(:,k)=[x1 x2 x3 x1]; 
+   y(:,k)=[y1 y2 y3 y1];
+   z(:,k)=[z1 z2 z3 z1];
+end
+
+fill3(x,y,z,'w')
 axis image
-set(gca,'fontsize',15)
-hold off
