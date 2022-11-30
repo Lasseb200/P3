@@ -1,7 +1,7 @@
 clear all
 
 % Adjust sphere:
-N_sph = 5;
+N_sph = 10;
 R = 5;
 
 plot_2D_geometry_points=true;
@@ -81,6 +81,7 @@ ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
 end
+
 %**********************************
 %***** Transformation from t1,t2-plane to x,y,z-plane
 %**********************************
@@ -133,7 +134,7 @@ T = [ts ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0] ...
     ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*7];
 
 %**********************************
-%***** Plotting a quarter half sphere (not a necessary step)
+%***** Plotting a quarter half sphere
 %**********************************
 if plot_quarter_half_sphere==true
 clear x y z
@@ -147,8 +148,12 @@ for k =1:length(ts)
 end
 fill3(x,y,z,'w','linewidth',1.3)
 set(gca,'fontsize',15)
+xlabel('x')
+ylabel('y')
+zlabel('z')
 axis image
 end
+
 %**********************************
 %***** Remove points appearing twice
 %**********************************
@@ -199,10 +204,16 @@ for k =1:length(T)
 end
 if plot_complete_sphere==true
 fill3(x,y,z,'w','linewidth',1.3)
+xlabel('x')
+ylabel('y')
+zlabel('z')
 set(gca,'fontsize',15)
-axis image
+qaxis image
 end
 
+%**********************************
+%***** Adding normal vectors to T matrix
+%*********************************
 T2=T(1:6,1:length(T));
    for k=1:length(T)
       if T(4,k)==1 || T(4,k)==2
@@ -241,6 +252,9 @@ T2=T(1:6,1:length(T));
    end
 T=T2;
 
+%**********************************
+%***** Plotting the normal vectors
+%*********************************
 if plot_normals==true
 for k=1:length(T)
     xn=P(1,T(2,k)); yn=P(2,T(2,k)); zn=P(3,T(2,k));
