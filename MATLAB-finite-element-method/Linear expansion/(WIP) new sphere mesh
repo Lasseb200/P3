@@ -65,11 +65,11 @@ set(gca,'fontsize',15)
 hold off
 
 %**********************************
-%***** Transformation
+%***** Transformation from t1,t2-plane to x,y,z-plane
 %**********************************
 ts=[];
 n = 0;
-xc=0;
+xc=0; % Center of the figure.
 yc=0; 
 zc=H;
 
@@ -94,6 +94,9 @@ n=n+length(p);
 t_plot=ts;
 p_plot=ps;
 
+%**********************************
+%***** Rotation
+%**********************************
 angle = pi/2;
 % Top
 ps2 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 1]*ps;
@@ -105,11 +108,26 @@ ps6 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps;
 ps7 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps2;
 ps8 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps3;
 
-%**********************************
-%***** Retrieving x/y/z-values (in a not very pretty way)
-%**********************************
 P = [ps ps2 ps3 ps4 ps5 ps6 ps7 ps8]
-T = [ts ts+length(ps) ts+length(ps)*2 ts+length(ps)*3 ts+length(ps)*4 ts+length(ps)*5 ts+length(ps)*6 ts+length(ps)*7]
+T = [ts ts+length(ps) ts+length(ps)*2 ts+length(ps)*3 ts+length(ps)*4 ...
+    ts+length(ps)*5 ts+length(ps)*6 ts+length(ps)*7]
+
+for i=1:length(P)
+    for j=1:length(P)
+        if not(i==j)
+            if P(:,i) == P(:,j)
+            P(:,j) = NaN;
+            end
+        end
+    end
+end
+P
+
+
+
+%**********************************
+%***** Retrieving x/y/z-values from P and T (for plotting)
+%**********************************
 clear x y z
 for k =1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -122,3 +140,6 @@ end
 
 fill3(x,y,z,'w')
 axis image
+
+
+
