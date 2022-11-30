@@ -208,7 +208,7 @@ xlabel('x')
 ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
-qaxis image
+axis image
 end
 
 %**********************************
