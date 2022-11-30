@@ -1,10 +1,18 @@
 clear all
+
+% Adjust sphere:
 N_sph = 5;
 R = 5;
-H = 5+1.5;
-HT=sqrt(3)/2*H;
-rotate=true; 
-circumference = pi/2; % Choose circumference of initial sphere element
+
+plot_2D_geometry_points=true;
+plot_2D_mesh = true;
+plot_quarter_half_sphere = true;
+plot_complete_sphere = true;
+plot_normals=false; % Quite processing heavy to plot
+
+
+H = 0;
+circumference = pi/2; % Circumference of initial sphere element
 angle = 0.5*circumference;
 
 %**********************************
@@ -18,8 +26,10 @@ for j=1:N_sph
     t2b=-angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j,:)=row;
-    plot(t2a,t1a,'r*'); % Color can be changed to highlight what each loop is plotting
+    if plot_2D_geometry_points==true
+    plot(t2a,t1a,'r*'); % Colors can be changed to highlight what each loop is plotting
     hold on
+    end
 end
 % Top:
 for j=1:N_sph 
@@ -28,7 +38,9 @@ for j=1:N_sph
     t2b=-angle*R+2*angle*R*(j)/N_sph;
     row=[2 t2a t2b t1a t1b 1 0];
     A(j+N_sph,:)=row;
+    if plot_2D_geometry_points==true
     plot(t2a,t1a,'r*'); 
+    end
 end
 % Right:
 for j=1:N_sph 
@@ -38,22 +50,27 @@ for j=1:N_sph
     t2b=angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(j+2*N_sph,:)=row;
+    if plot_2D_geometry_points==true
     plot(t2a,t1a,'r*'); 
+    end
 end
+if plot_2D_geometry_points==true
 set(gca,'fontsize',15)
     xlabel('t_2')
     ylabel('t_1')
 axis image
 hold off
+end
+g_sph = transpose(A); % Geometry matrix
 
 %**********************************
 %***** Construct 2D mesh
 %**********************************
 hmax = 2; % Maximum distance between points.
-g_sph = transpose(A); % Geometry matrix
 [p e t]=initmesh(g_sph,'hmax',hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
+if plot_2D_mesh==true;
 h=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h,'linewidth',1.3,'color','k')
@@ -63,7 +80,7 @@ xlabel('t_2')
 ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
-
+end
 %**********************************
 %***** Transformation from t1,t2-plane to x,y,z-plane
 %**********************************
@@ -93,7 +110,7 @@ ts=[ts t2];
 n=n+length(p);
 
 %**********************************
-%***** Rotation
+%***** Rotation of the 7 additional quarter half spheres
 %**********************************
 angle = pi/2;
 % Top
@@ -107,12 +124,18 @@ ps7 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps2;
 ps8 = [cos(angle) sin(angle) 0;-sin(angle) cos(angle) 0;0 0 -1]*ps3;
 
 P = [ps ps2 ps3 ps4 ps5 ps6 ps7 ps8];
-T = [ts ts+length(ps) ts+length(ps)*2 ts+length(ps)*3 ts+length(ps)*4 ...
-    ts+length(ps)*5 ts+length(ps)*6 ts+length(ps)*7];
+T = [ts ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0] ...
+    ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*2 ...
+    ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*3 ...
+    ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*4 ...
+    ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*5 ...
+    ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*6 ...
+    ts+[length(ps);length(ps);length(ps);0;0;0;0;0;0;0].*7];
 
 %**********************************
 %***** Plotting a quarter half sphere (not a necessary step)
 %**********************************
+if plot_quarter_half_sphere==true
 clear x y z
 for k =1:length(ts)
    r1=ps2(:,ts(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -125,6 +148,7 @@ end
 fill3(x,y,z,'w','linewidth',1.3)
 set(gca,'fontsize',15)
 axis image
+end
 %**********************************
 %***** Remove points appearing twice
 %**********************************
@@ -162,7 +186,7 @@ while j2<length(P)
 end
 
 %**********************************
-%***** Retrieving x/y/z-values from P and T (for plotting)
+%***** Plotting the complete sphere
 %**********************************
 clear x y z
 for k =1:length(T)
@@ -173,7 +197,57 @@ for k =1:length(T)
    y(:,k)=[y1 y2 y3 y1];
    z(:,k)=[z1 z2 z3 z1];
 end
-
+if plot_complete_sphere==true
 fill3(x,y,z,'w','linewidth',1.3)
 set(gca,'fontsize',15)
 axis image
+end
+
+T2=T(1:6,1:length(T));
+   for k=1:length(T)
+      if T(4,k)==1 || T(4,k)==2
+          %part of sphere
+          xc=0; yc=0; zc=0;
+          x1=P(1,T(1,k)); y1=P(2,T(1,k)); z1=P(3,T(1,k));
+          x2=P(1,T(2,k)); y2=P(2,T(2,k)); z2=P(3,T(2,k));
+          x3=P(1,T(3,k)); y3=P(2,T(3,k)); z3=P(3,T(3,k));
+          nx=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
+          ny=(z2-z1)*(x3-x1)-(z3-z1)*(x2-x1);
+          nz=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+          dummy=sqrt(nx^2+ny^2+nz^2); 
+          nx=nx/dummy; ny=ny/dummy; nz=nz/dummy;
+          if nx*(x1-xc)+ny*(y1-yc)+nz*(z1-zc)>0,
+              T2(5,k)=nx;
+              T2(6,k)=ny;
+              T2(7,k)=nz;
+          else
+              T2(5,k)=-nx;
+              T2(6,k)=-ny;
+              T2(7,k)=-nz;
+          end
+      end
+      if T(4,k)==3 && (P(3,T(3,k))==-B/2 || P(3,T(2,k))==-B/2 || P(3,T(1,k))==-B/2)
+          T2(5,k)=0;
+          T2(6,k)=0;
+          T2(7,k)=-1;
+      end
+      
+      if T(4,k)==3 && (P(3,T(3,k))==B/2 || P(3,T(2,k))==B/2 || P(3,T(1,k))==B/2)
+          T2(5,k)=0;
+          T2(6,k)=0;
+          T2(7,k)=1;
+      end
+      
+   end
+T=T2;
+
+if plot_normals==true
+for k=1:length(T)
+    xn=P(1,T(2,k)); yn=P(2,T(2,k)); zn=P(3,T(2,k));
+    quiver3(xn,yn,zn,T(5,k),T(6,k),T(7,k),'k')
+    hold on
+end
+axis equal
+fill3(x,y,z,'w','linewidth',1.3)
+hold off
+end
