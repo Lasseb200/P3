@@ -1,0 +1,239 @@
+clear all
+
+L = 10;
+H = sqrt(3)/2*L;
+N_l = 5;
+D=5;
+R=D/2;
+
+for i=1:N_l % Bottom
+    t1a=L*(i-1)/N_l;
+    t2a=0;
+    t1b=L*i/N_l;
+    t2b=0;
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i,:)=row;
+    plot(t1a,t2a,'r*'); % Colors can be changed to highlight what each loop is plotting
+    hold on
+end
+for i=1:N_l % Left
+    t1a=L*i/(2*N_l);
+    t2a=H*i/N_l;
+    t1b=L*(i-1)/(2*N_l);
+    t2b=H*(i-1)/N_l;
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i+N_l,:)=row;
+    plot(t1a,t2a,'b*');
+end
+for i=1:N_l % Right
+    t1a=L-L*(i-1)/(2*N_l);
+    t2a=H*(i-1)/N_l;
+    t1b=L-L*i/(2*N_l);
+    t2b=H*i/N_l;
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i+2*N_l,:)=row;
+    plot(t1a,t2a,'g*');
+end
+axis image
+g_tri = transpose(A);
+hold off
+hmax = 2; % Maximum distance between points.
+[p e t]=initmesh(g_tri,'hmax',hmax);
+P_tri = p; % Matrix containing positions of every corner plotted.
+T_tri = t; % Matrix identifying which corners form a (small) triangle. 
+h_tri=pdemesh(p,e,t); % Plots the mesh
+hold on
+set(h_tri,'linewidth',1.3,'color','k')
+plot(P_tri(1,:),P_tri(2,:),'r*') % Plots the (small) triangle corners in red
+axis image
+xlabel('t_2')
+ylabel('t_1')
+set(gca,'fontsize',15)
+hold off
+pt = [P_tri P_tri;ones(1,length(P_tri))*R -ones(1,length(P_tri))*R]
+tt = [T_tri T_tri+[length(P_tri);length(P_tri);length(P_tri);0]]
+
+clear x y z r1 r2 r3
+for k = 1:length(tt)
+   r1=pt(:,tt(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
+   r2=pt(:,tt(2,k)); x2=r2(1); y2=r2(2); z2=r2(3);   
+   r3=pt(:,tt(3,k)); x3=r3(1); y3=r3(2); z3=r3(3);
+   x(:,k)=[x1 x2 x3 x1]; 
+   y(:,k)=[y1 y2 y3 y1];
+   z(:,k)=[z1 z2 z3 z1];
+end
+fill3(x,y,z,'w','linewidth',1.3)
+xlabel('x')
+ylabel('y')
+zlabel('z')
+set(gca,'fontsize',15)
+axis image
+
+
+
+%**********************************
+%***** Cylinders
+%**********************************
+N_cyl = 5;
+N_sph = 5;
+H= 20;
+
+for i=1:N_cyl % Bottom
+    t1a=2*pi*R*(i-1)/N_cyl;
+    t2a=0;
+    t1b=2*pi*R*(i)/N_cyl;
+    t2b=0;
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i,:)=row;
+    plot(t1a,t2a,'r*'); % Colors can be changed to highlight what each loop is plotting
+    hold on
+end
+for i=1:N_cyl % Top
+    t1a=2*pi*R*(i)/N_cyl;
+    t2a=H;
+    t1b=2*pi*R*(i-1)/N_cyl;
+    t2b=H;
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i+N_cyl,:)=row;
+    plot(t1a,t2a,'r*'); 
+end
+for i=1:N_cyl % Left 
+    t1a=0;
+    t2a=H*(i)/(N_cyl);
+    t1b=0;
+    t2b=H*(i-1)/(N_cyl);
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i+N_cyl*2,:)=row;
+    plot(t1a,t2a,'r*');
+end
+for i=1:N_cyl % Right 
+    t1a=2*pi*R;
+    t2a=H*(i-1)/(N_cyl);
+    t1b=2*pi*R;
+    t2b=H*(i)/(N_cyl);
+    row=[2 t2a t2b t1a t1b 2 0];
+    A(i+N_cyl*3,:)=row;
+    plot(t1a,t2a,'r*');
+end
+axis image
+g_cyl = transpose(A);
+hold off
+
+hmax = 2; % Maximum distance between points.
+[p e t]=initmesh(g_cyl,'hmax',hmax);
+P_cyl = p; % Matrix containing positions of every corner plotted.
+T_cyl = t; % Matrix identifying which corners form a triangle. 
+h=pdemesh(p,e,t); % Plots the mesh
+hold on
+set(h,'linewidth',1.3,'color','k')
+plot(P_cyl(1,:),P_cyl(2,:),'r*') % Plots the triangle corners in red
+axis image
+xlabel('t_2')
+ylabel('t_1')
+set(gca,'fontsize',15)
+hold off
+
+
+xc=0; % Center of the figure.
+yc=0; 
+zc=H;
+n=0;
+for i=1:length(P_cyl)
+    t2=P_cyl(1,i); t1=P_cyl(2,i);
+    z=t2;
+    x = R*cos(t1/R); % Transformation of x from t1,t2-plane
+    y = R*sin(t1/R); % Transformation of y from t1,t2-plane
+    pc(1,i+n)=x;
+    pc(2,i+n)=y;
+    pc(3,i+n)=z;
+end
+td=zeros(7,length(t));
+td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc;
+tc=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
+n=n+length(p);
+
+
+%**********************************
+%***** Spheres
+%**********************************
+clear p e t A
+angle = pi/4;
+% Left:
+for i=1:N_sph 
+    t1a=pi/2*R*(i-1)/N_sph;
+    t2a=-angle*R*sin(t1a/R);
+    t1b=pi/2*R*(i)/N_sph;
+    t2b=-angle*R*sin(t1b/R);
+    row=[2 t2a t2b t1a t1b 1 0];
+    A(i,:)=row;
+    plot(t2a,t1a,'r*'); % Colors can be changed to highlight what each loop is plotting
+    hold on
+end
+% Top:
+for i=1:N_sph 
+    t1a=pi/2*R; t1b=t1a;
+    t2a=-angle*R+2*angle*R*(i-1)/N_sph;
+    t2b=-angle*R+2*angle*R*(i)/N_sph;
+    row=[2 t2a t2b t1a t1b 1 0];
+    A(i+N_sph,:)=row;
+    plot(t2a,t1a,'r*'); 
+end
+% Right:
+for i=1:N_sph 
+    t1a=pi/2*R*(N_sph-i+1)/N_sph;
+    t2a=angle*R*sin(t1a/R);
+    t1b=pi/2*R*(N_sph-i)/N_sph;
+    t2b=angle*R*sin(t1b/R);
+    row=[2 t2a t2b t1a t1b 1 0];
+    A(i+2*N_sph,:)=row;
+    plot(t2a,t1a,'r*'); 
+end
+set(gca,'fontsize',15)
+    xlabel('t_2')
+    ylabel('t_1')
+axis image
+hold off
+g_sph = transpose(A); % Geometry matrix
+
+%**********************************
+%***** Construct 2D mesh
+%**********************************
+hmax = 2; % Maximum distance between points.
+[p e t]=initmesh(g_sph,'hmax',hmax);
+P_sph = p; % Matrix containing positions of every corner plotted.
+T_sph = t; % Matrix identifying which corners form a triangle. 
+h_sph=pdemesh(p,e,t); % Plots the mesh
+hold on
+set(h_sph,'linewidth',1.3,'color','k')
+plot(P_sph(1,:),P_sph(2,:),'r*') % Plots the triangle corners in red
+axis image
+xlabel('t_2')
+ylabel('t_1')
+set(gca,'fontsize',15)
+hold off
+
+%**********************************
+%***** Transformation from t1,t2-plane to x,y,z-plane
+%**********************************
+n = 0;
+xc=0; % Center of the figure.
+yc=0; 
+zc=H;
+
+for i=1:length(P_sph)
+    t2=P_sph(1,i); t1=P_sph(2,i);
+    z=R*cos(t1/R);
+    x = cos(t2/(R*sin(t1/R)))*R*sin(t1/R); % Transformation of x from t1,t2-plane
+    y = sin(t2/(R*sin(t1/R)))*R*sin(t1/R); % Transformation of y from t1,t2-plane
+    if t1==0 % To avoid division by 0
+        x=0; y=0;
+    end
+    ps(1,i+n)=x;
+    ps(2,i+n)=y;
+    ps(3,i+n)=z;
+end
+
+td=zeros(7,length(t));
+td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc;
+ts=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td];
+n=n+length(p);
