@@ -21,4 +21,4 @@ notes: Choose between gold or silver nanoparticles by choosing permitivitty on l
   3. Run the 3D mesh model for either [spheres](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Linear%20expansion/(WIP)%20Sphere%20mesh), [rods](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Linear%20expansion/(WIP)%20Rod%20mesh) or [prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Linear%20expansion/(WIP)%20Prism%20mesh).
 
 
-![lin_prism](lin_prism.png)
+![Lin_prism](Lin_prism.png)
