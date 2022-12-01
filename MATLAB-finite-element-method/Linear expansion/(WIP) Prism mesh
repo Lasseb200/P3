@@ -175,8 +175,8 @@ tt = [tt;zeros(1,length(tt));zeros(1,length(tt));ones(1,length(tt));zeros(1,leng
 T = [tt tc+[length(pt);length(pt);length(pt);0;0;0;0;0;0;0]];
 P = [pt pc];
 
-plot_semiprism=false;
-if plot_semiprism==true;
+
+
 clear x y z r1 r2 r3
 for k = 1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -192,7 +192,7 @@ ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
 axis image
-end
+
 
 
 
