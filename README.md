@@ -16,7 +16,7 @@ The combined absorption from *N* different angles can be calculated for rods (WI
 
 ### Images:
 <img src="3D_point_model_of_prism.png" width="250">
-![3D_point_model_of_prism](3D_point_model_of_prism.png) ![Ag_rods_plot](Ag_rods_plot.png)
+ ![Ag_rods_plot](Ag_rods_plot.png)
 ## Linear expansion (WIP)
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
   2. Ensure that the MATLAB add-on '[Partial Differential Equation Toolbox](https://se.mathworks.com/products/pde.html)' is installed.
