@@ -11,6 +11,8 @@ The code is written in plain text, and is meant to be copy/pasted into the MATLA
   
 notes: Choose between gold or silver nanoparticles by choosing permitivitty on line 61 in the absorption calculation code, the direction of the E-field is chosen on line 58. The rod and prism models can be rotated in any direction in the bottom of their respective source code. 
 
+#### Total absorption from different angles
+
 ![3D_point_model_of_prism](3D_point_model_of_prism.png) ![Ag_rods_plot](Ag_rods_plot.png)
 ### Linear expansion (WIP)
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
