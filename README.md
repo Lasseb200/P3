@@ -10,9 +10,6 @@ The code is written in plain text, and is meant to be copy/pasted into the MATLA
   3. Run the [absorption calculation code](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Calculation%20and%20plot%20of%20absorption%20cross%20section). Make sure that the variables from the 3D model haven't been cleared.
   
 notes: Choose between gold or silver nanoparticles by choosing permitivitty on line 61 in the absorption calculation code, the direction of the E-field is chosen on line 58. The prism model can be rotated around the z-axis on line 278 in its source code. 
-```diff
-! Rotation feature is currently not working properly
-```
 
 ![3D_point_model_of_prism](3D_point_model_of_prism.png) ![Ag_rods_plot](Ag_rods_plot.png)
 ### Linear expansion (WIP)
