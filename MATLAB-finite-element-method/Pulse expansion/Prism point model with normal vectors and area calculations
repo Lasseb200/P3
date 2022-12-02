@@ -279,15 +279,15 @@ area = F(4,:);
 %***** Rotating the prism
 %**********************************
 % Here, the prism can be rotated around the z-axis by any angle.
-angle = pi;
+angle = 2*pi;
 F = [cos(angle) -sin(angle) 0 0 0 0 0;sin(angle) cos(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cos(angle) -sin(angle) 0; 0 0 0 0 sin(angle) cos(angle) 0;0 0 0 0 0 0 1]*F;
 
 % Here, the prism can be rotated around the y-axis by any angle.
-angle = pi/3;
+angle = 2*pi;
 F = [1 0 0 0 0 0 0;0 cos(angle) -sin(angle) 0 0 0 0;0 sin(angle) cos(angle) 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 1 0 0; 0 0 0 0 0 cos(angle) -sin(angle);0 0 0 0 0 sin(angle) cos(angle)]*F;
 
 % Here, the prism can be rotated around the y-axis by any angle.
-angle = pi;
+angle = 2*pi;
 F = [cos(angle) 0 sin(angle) 0 0 0 0;0 1 0 0 0 0 0;-sin(angle) 0 cos(angle) 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cos(angle) 0 sin(angle); 0 0 0 0 0 1 0;0 0 0 0 -sin(angle) 0 cos(angle)]*F;
 
 
