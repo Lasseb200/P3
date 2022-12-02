@@ -98,15 +98,15 @@ F = [(positions);(area);(Norm_vec)]; % Final function
 %***** Rotating the rod
 %**********************************
 % Here, the prism can be rotated around the z-axis by any angle.
-angle = pi;
+angle = 2*pi;
 F = [cos(angle) -sin(angle) 0 0 0 0 0;sin(angle) cos(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cos(angle) -sin(angle) 0; 0 0 0 0 sin(angle) cos(angle) 0;0 0 0 0 0 0 1]*F;
 
 % Here, the prism can be rotated around the y-axis by any angle.
-angle = pi/3;
+angle = 2*pi;
 F = [1 0 0 0 0 0 0;0 cos(angle) -sin(angle) 0 0 0 0;0 sin(angle) cos(angle) 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 1 0 0; 0 0 0 0 0 cos(angle) -sin(angle);0 0 0 0 0 sin(angle) cos(angle)]*F;
 
 % Here, the prism can be rotated around the y-axis by any angle.
-angle = pi/4;
+angle = 2*pi;
 F = [cos(angle) 0 sin(angle) 0 0 0 0;0 1 0 0 0 0 0;-sin(angle) 0 cos(angle) 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cos(angle) 0 sin(angle); 0 0 0 0 0 1 0;0 0 0 0 -sin(angle) 0 cos(angle)]*F;
 
 plot3(F(1,:),F(2,:),F(3,:),'k.')
