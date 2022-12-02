@@ -6,6 +6,19 @@ N_l = 10;
 D=5;
 R=D/2;
 
+plot_tri_geometry = false;
+plot_2D_tri_mesh = false;
+plot_tri_surfaces = false;
+
+plot_cyl_geometry=false;
+plot_2D_cyl_mesh = false;
+plot_prism_without_corners = false;
+
+plot_sph_geometry = false;
+plot_2D_sph_mesh = false;
+
+plot_final_prism = true;
+
 for i=1:N_l % Bottom
     t1a=L*(i-1)/N_l;
     t2a=0;
@@ -13,8 +26,10 @@ for i=1:N_l % Bottom
     t2b=0;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i,:)=row;
+    if plot_tri_geometry==true
     plot(t1a,t2a,'r*'); % Colors can be changed to highlight what each loop is plotting
     hold on
+    end
 end
 for i=1:N_l % Left
     t1a=L*i/(2*N_l);
@@ -23,7 +38,9 @@ for i=1:N_l % Left
     t2b=H*(i-1)/N_l;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_l,:)=row;
-    plot(t1a,t2a,'b*');
+    if plot_tri_geometry==true
+    plot(t1a,t2a,'r*');
+    end
 end
 for i=1:N_l % Right
     t1a=L-L*(i-1)/(2*N_l);
@@ -32,15 +49,20 @@ for i=1:N_l % Right
     t2b=H*i/N_l;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+2*N_l,:)=row;
-    plot(t1a,t2a,'g*');
+    if plot_tri_geometry==true
+    plot(t1a,t2a,'r*');
+    end
 end
+if plot_tri_geometry==true
 axis image
-g_tri = transpose(A);
 hold off
+end
+g_tri = transpose(A);
 hmax = 5; % Maximum distance between points.
 [p e t]=initmesh(g_tri,'hmax',hmax);
 P_tri = p; % Matrix containing positions of every corner plotted.
-T_tri = t; % Matrix identifying which corners form a (small) triangle. 
+T_tri = t; % Matrix identifying which corners form a (small) triangle.
+if plot_2D_tri_mesh==true;
 h_tri=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h_tri,'linewidth',1.3,'color','k')
@@ -50,14 +72,14 @@ xlabel('t_2')
 ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
-pt = [P_tri P_tri;ones(1,length(P_tri))*R -ones(1,length(P_tri))*R]
-tt = [T_tri T_tri+[length(P_tri);length(P_tri);length(P_tri);0]]
+end
+pt = [P_tri P_tri;ones(1,length(P_tri))*R -ones(1,length(P_tri))*R];
+tt = [T_tri T_tri+[length(P_tri);length(P_tri);length(P_tri);0]];
 xc = 0;
 yc=0;
 zc=0;
 
-
-
+if plot_tri_surfaces==true
 clear x y z r1 r2 r3 td
 for k = 1:length(tt)
    r1=pt(:,tt(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -73,14 +95,13 @@ ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
 axis image
-
+end
 
 
 %**********************************
 %***** Cylinders
 %**********************************
 N_cyl = N_l;
-N_sph = N_l;
 
 for i=1:N_cyl % Bottom
     t1a=pi*R*(i-1)/N_cyl;
@@ -89,8 +110,10 @@ for i=1:N_cyl % Bottom
     t2b=0;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i,:)=row;
+    if plot_cyl_geometry==true
     plot(t1a,t2a,'r*'); % Colors can be changed to highlight what each loop is plotting
     hold on
+    end
 end
 for i=1:N_cyl % Top
     t1a=pi*R*(i)/N_cyl;
@@ -99,7 +122,9 @@ for i=1:N_cyl % Top
     t2b=L;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl,:)=row;
+    if plot_cyl_geometry==true
     plot(t1a,t2a,'r*'); 
+    end
 end
 for i=1:N_cyl % Left 
     t1a=0;
@@ -108,7 +133,9 @@ for i=1:N_cyl % Left
     t2b=L*(i-1)/(N_cyl);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*2,:)=row;
+    if plot_cyl_geometry==true
     plot(t1a,t2a,'r*');
+    end
 end
 for i=1:N_cyl % Right 
     t1a=pi*R;
@@ -117,16 +144,21 @@ for i=1:N_cyl % Right
     t2b=L*(i)/(N_cyl);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*3,:)=row;
+    if plot_cyl_geometry==true
     plot(t1a,t2a,'r*');
+    end
 end
+if plot_cyl_geometry==true
 axis image
-g_cyl = transpose(A);
 hold off
+end
+g_cyl = transpose(A);
 
 hmax = 2; % Maximum distance between points.
 [p e t]=initmesh(g_cyl,'hmax',hmax);
 P_cyl = p; % Matrix containing positions of every corner plotted.
-T_cyl = t; % Matrix identifying which corners form a triangle. 
+T_cyl = t; % Matrix identifying which corners form a triangle.
+if plot_2D_cyl_mesh
 h=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h,'linewidth',1.3,'color','k')
@@ -136,7 +168,7 @@ xlabel('t_2')
 ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
-
+end
 
 xc=0; % Center of the figure.
 yc=0; 
@@ -176,7 +208,7 @@ T = [tt tc+[length(pt);length(pt);length(pt);0;0;0;0;0;0;0]];
 P = [pt pc];
 
 
-
+if plot_prism_without_corners==true;
 clear x y z r1 r2 r3
 for k = 1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -192,7 +224,7 @@ ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
 axis image
-
+end
 
 
 
@@ -201,7 +233,7 @@ axis image
 %**********************************
 %***** Spheres
 %**********************************
-N_sph = round(N_cyl/2)
+N_sph = N_cyl;
 clear p e t A x y z
 angle = pi/3;
 % Left:
@@ -212,8 +244,10 @@ for i=1:N_sph
     t2b=-angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(i,:)=row;
+    if plot_sph_geometry==true
     plot(t2a,t1a,'r*'); % Colors can be changed to highlight what each loop is plotting
     hold on
+    end
 end
 % Top:
 for i=1:N_sph 
@@ -222,7 +256,9 @@ for i=1:N_sph
     t2b=-angle*R+2*angle*R*(i)/N_sph;
     row=[2 t2a t2b t1a t1b 1 0];
     A(i+N_sph,:)=row;
+    if plot_sph_geometry==true
     plot(t2a,t1a,'r*'); 
+    end
 end
 % Right:
 for i=1:N_sph 
@@ -232,13 +268,17 @@ for i=1:N_sph
     t2b=angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(i+2*N_sph,:)=row;
+    if plot_sph_geometry==true
     plot(t2a,t1a,'r*'); 
+    end
 end
+if plot_sph_geometry==true
 set(gca,'fontsize',15)
     xlabel('t_2')
     ylabel('t_1')
 axis image
 hold off
+end
 g_sph = transpose(A); % Geometry matrix
 
 %**********************************
@@ -247,7 +287,8 @@ g_sph = transpose(A); % Geometry matrix
 hmax = 5; % Maximum distance between points.
 [p e t]=initmesh(g_sph,'hmax',hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
-T_sph = t; % Matrix identifying which corners form a triangle. 
+T_sph = t; % Matrix identifying which corners form a triangle.
+if plot_2D_sph_mesh==true;
 h_sph=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h_sph,'linewidth',1.3,'color','k')
@@ -257,6 +298,7 @@ xlabel('t_2')
 ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
+end
 
 %**********************************
 %***** Transformation from t1,t2-plane to x,y,z-plane
@@ -302,7 +344,7 @@ ps = [ps ps2 ps3 ps4 ps5 ps6];
 T = [T ts+[length(P);length(P);length(P);0;0;0;0;0;0;0]];
 P = [P ps];
 
-
+if plot_final_prism==true;
 clear x y z r1 r2 r3
 for k = 1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -318,3 +360,4 @@ ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
 axis image
+end
