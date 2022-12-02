@@ -14,7 +14,7 @@ notes: Choose between gold or silver nanoparticles by choosing permitivitty on l
 #### Total absorption from different angles
 The combined absorption from *N* different angles can be calculated for spheres(WIP) and [prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Prisms_total_absorption). The code is, however, quite processing heavy.
 
-%%%% Images:
+#### Images:
 ![3D_point_model_of_prism](3D_point_model_of_prism.png) ![Ag_rods_plot](Ag_rods_plot.png)
 ### Linear expansion (WIP)
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
