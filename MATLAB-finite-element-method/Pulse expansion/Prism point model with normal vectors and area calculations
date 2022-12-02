@@ -1,7 +1,8 @@
 clear all
-N=25;
+N=20;
 L=40;
-R=5;
+H = 10;
+R=H/2;
 
 %**********************************
 %***** Top / bottom triangles 
@@ -123,8 +124,8 @@ clear x y z
 %***** Cylindrical sides
 %**********************************
 L_cyl = LL;
-N_phi = N;
-N_cyl_z = (N*N_phi)/(pi*R);
+N_phi = N*0.2*R;
+N_cyl_z = (L*N_phi)/(pi*R)*5/R;
 
 % Side 1:
 n=1;
@@ -274,13 +275,13 @@ F = transpose(without_NaN); % Function describing the entire model.
 area = F(4,:);
 
 % Here, the prism can be rotated around the z-axis by any angle.
-angle = 2;
-F = [cospi(angle) -sinpi(angle) 0 0 0 0 0;sinpi(angle) cospi(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cospi(angle) -sinpi(angle) 0; 0 0 0 0 sinpi(angle) cospi(angle) 0;0 0 0 0 0 0 1]*F;
+angle = pi;
+F = [cos(angle) -sin(angle) 0 0 0 0 0;sin(angle) cos(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cos(angle) -sin(angle) 0; 0 0 0 0 sin(angle) cos(angle) 0;0 0 0 0 0 0 1]*F;
 
 N = length(F)
 plot3(F(1,:),F(2,:),F(3,:),'k.')
 hold on
-set(gca,'visible','off') % Axis on/off
+%set(gca,'visible','off') % Axis on/off
 axis image
 hold off
 
