@@ -12,7 +12,7 @@ The code is written in plain text, and is meant to be copy/pasted into the MATLA
 notes: Choose between gold or silver nanoparticles by choosing permitivitty on line 61 in the absorption calculation code, the direction of the E-field is chosen on line 58. The rod and prism models can be rotated in any direction in the bottom of their respective source code. 
 
 ### Total absorption from different angles
-The combined absorption from *N* different angles can be calculated for spheres(WIP) and [prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Prisms_total_absorption). The code is, however, quite processing heavy.
+The combined absorption from *N* different angles can be calculated for spheres (WIP) and [prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Prisms_total_absorption). The code is, however, quite processing heavy.
 
 ### Images:
 ![3D_point_model_of_prism](3D_point_model_of_prism.png) ![Ag_rods_plot](Ag_rods_plot.png)
