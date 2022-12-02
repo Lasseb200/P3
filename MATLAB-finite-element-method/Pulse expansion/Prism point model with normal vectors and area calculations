@@ -278,7 +278,7 @@ angle = 2;
 F = [cospi(angle) -sinpi(angle) 0 0 0 0 0;sinpi(angle) cospi(angle) 0 0 0 0 0;0 0 1 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cospi(angle) -sinpi(angle) 0; 0 0 0 0 sinpi(angle) cospi(angle) 0;0 0 0 0 0 0 1]*F;
 
 N = length(F)
-plot3(S(1,:),S(2,:),S(3,:),'k.')
+plot3(F(1,:),F(2,:),F(3,:),'k.')
 hold on
 set(gca,'visible','off') % Axis on/off
 axis image
