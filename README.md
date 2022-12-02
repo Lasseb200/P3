@@ -15,8 +15,8 @@ notes: Choose between gold or silver nanoparticles by choosing permitivitty on l
 The combined absorption from *N* different angles can be calculated for rods (WIP) and [prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Prisms_total_absorption). The code is, however, quite processing heavy.
 
 ### Images:
-![3D_point_model_of_prism](3D_point_model_of_prism.png "Title" {width=40px height=400px})
-![Ag_rods_plot](Ag_rods_plot.png)
+<img src="3D_point_model_of_prism.png" width="48">
+![3D_point_model_of_prism](3D_point_model_of_prism.png)![Ag_rods_plot](Ag_rods_plot.png)
 ## Linear expansion (WIP)
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
   2. Ensure that the MATLAB add-on '[Partial Differential Equation Toolbox](https://se.mathworks.com/products/pde.html)' is installed.
