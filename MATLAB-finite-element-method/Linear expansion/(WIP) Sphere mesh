@@ -105,7 +105,7 @@ for j=1:length(P_sph)
 end
 
 td=zeros(7,length(t));
-td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc;
+td(1,:)=1;td(2,:)=xc; td(3,:)=yc; td(4,:)=zc; % The 1 is to show that this tringle element is part of a sphere, but it is not important, since this code, of course, only deals with a sphere.
 t2=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
 ts=[ts t2];
 n=n+length(p);
