@@ -74,7 +74,7 @@ for i=1:length(P_cyl)
     pc(3,i+n)=z;
 end
 td=zeros(7,length(t));
-td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc;
+td(1,:)=2; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc; % The '2' is to indicate that these triangles are part of the cylinder.
 tc=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
 n=n+length(p);
 
@@ -213,7 +213,7 @@ T = [T tc+add_length];
 P = [P pc];
 
 %**********************************
-%***** Plotting the complete sphere
+%***** Plotting the complete rod
 %**********************************
 clear x y z r1 r2 r3
 for k = 1:length(T)
