@@ -4,10 +4,12 @@ clear all
 N_sph = 8;
 R = 5;
 
-plot_2D_geometry_points=true;
-plot_2D_mesh = true;
-plot_quarter_half_sphere = true;
+plot_2D_geometry_points=false;
+plot_2D_mesh = false;
+plot_quarter_half_sphere = false;
+
 plot_complete_sphere = true;
+
 plot_normals=false; % Quite processing heavy to plot
 
 
