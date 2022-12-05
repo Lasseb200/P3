@@ -4,6 +4,7 @@ clear all
 %********************************************************************
 %                           Settings
 %********************************************************************
+% Note: not all N, H and R values are compatible with each other
 R = 5; % Radius.
 H= 20; % Height of cylinder, does not include the spherical ends.
 N = 15;
@@ -22,8 +23,8 @@ plot_normals=false; % Quite processing heavy
 %********************************************************************
 
 N_cyl = N; clear N
-N_cyl2 = round(H*N_cyl/(2*pi*R)); % Number of points for the cylinder height
-N_sph = round(0.25*N_cyl);
+N_cyl2 = ceil(H*N_cyl/(2*pi*R)); % Rounds up
+N_sph = ceil(0.25*N_cyl);
 AR = (H+2*R)/(2*R);
 hmax = round(2*pi*R/N_cyl);
 
@@ -84,7 +85,7 @@ g_cyl = transpose(A); % Geometry matrix
 %**********************************
 %***** Creating and plotting the 2D cylinder mesh
 %**********************************
-[p e t]=initmesh(g_cyl,'hmax',hmax);
+[p,e,t]=initmesh(g_cyl,'hmax',hmax);
 P_cyl = p; % Matrix containing positions of every corner plotted.
 T_cyl = t; % Matrix identifying which corners form a triangle.
 if plot_2D_cylinder_mesh==true
@@ -194,7 +195,7 @@ g_sph = transpose(A); % Geometry matrix
 %***** Creating and plotting the 2D sphere mesh
 %**********************************
 %hmax = 2; % Maximum distance between points.
-[p e t]=initmesh(g_sph,'hmax',hmax+0.5*hmax);
+[p,e,t]=initmesh(g_sph,'hmax',hmax+0.5*hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
 if plot_2D_sphere_mesh==true
@@ -324,7 +325,7 @@ end
 %***** Adding normal vectors to T matrix
 %*********************************
 T2=T(1:6,1:length(T));
-for k=1:length(T);
+for k=1:length(T)
     xc=0; yc=0; xc=0;
     x1=P(1,T(1,k)); y1=P(2,T(1,k)); z1=P(3,T(1,k));
     x2=P(1,T(2,k)); y2=P(2,T(2,k)); z2=P(3,T(2,k));
@@ -344,6 +345,7 @@ for k=1:length(T);
               T2(7,k)=-nz;
           end
 end
+clear T
 T=[T2(1:3,:);T2(5:7,:)];
 
 %**********************************
