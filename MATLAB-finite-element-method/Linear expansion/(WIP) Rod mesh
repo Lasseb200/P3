@@ -6,25 +6,26 @@ clear all
 %********************************************************************
 R = 5; % Radius.
 H= 20; % Height of cylinder, does not include the spherical ends.
-N = 10; %%%%% BUGGED
+N = 30; %%%%% BUGGED
 
 % Choose what should be plotted
-plot_2D_cylinder_geometry_points = false;
-plot_2D_cylinder_mesh = false;
-plot_cylinder = false;
+plot_2D_cylinder_geometry_points = true;
+plot_2D_cylinder_mesh = true;
+plot_cylinder = true;
 
-plot_2D_sphere_geometry_points = false;
-plot_2D_sphere_mesh = false;
+plot_2D_sphere_geometry_points = true;
+plot_2D_sphere_mesh = true;
 
 plot_complete_rod = true;
 
 plot_normals=false; % Quite processing heavy
 %********************************************************************
 
-N_cyl = N;
-N_sph = 0.5*N_cyl;
+N_cyl = N; clear N
+N_cyl2 = round(H*N_cyl/(2*pi*R)); % Number of points for the cylinder height
+N_sph = round(0.25*N_cyl);
 AR = (H+2*R)/(2*R);
-clear N
+hmax = round(2*pi*R/N_cyl);
 %**********************************
 %***** Create and plot 2D cylinder geometry
 %**********************************
@@ -51,24 +52,24 @@ for i=1:N_cyl % Top
     plot(t1a,t2a,'r*'); 
     end
 end
-for i=1:N_cyl % Left 
+for i=1:N_cyl2 % Left 
     t1a=0;
-    t2a=H*(i)/(N_cyl);
+    t2a=H*(i)/(N_cyl2);
     t1b=0;
-    t2b=H*(i-1)/(N_cyl);
+    t2b=H*(i-1)/(N_cyl2);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*2,:)=row;
     if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*');
     end
 end
-for i=1:N_cyl % Right 
+for i=1:N_cyl2 % Right 
     t1a=2*pi*R;
-    t2a=H*(i-1)/(N_cyl);
+    t2a=H*(i-1)/(N_cyl2);
     t1b=2*pi*R;
-    t2b=H*(i)/(N_cyl);
+    t2b=H*(i)/(N_cyl2);
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+N_cyl*3,:)=row;
+    A(i+N_cyl*2+N_cyl2,:)=row;
     if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*');
     end
@@ -82,7 +83,6 @@ g_cyl = transpose(A); % Geometry matrix
 %**********************************
 %***** Creating and plotting the 2D cylinder mesh
 %**********************************
-hmax = 2; % Maximum distance between points.
 [p e t]=initmesh(g_cyl,'hmax',hmax);
 P_cyl = p; % Matrix containing positions of every corner plotted.
 T_cyl = t; % Matrix identifying which corners form a triangle.
@@ -192,7 +192,7 @@ g_sph = transpose(A); % Geometry matrix
 %**********************************
 %***** Creating and plotting the 2D sphere mesh
 %**********************************
-hmax = 2; % Maximum distance between points.
+%hmax = 2; % Maximum distance between points.
 [p e t]=initmesh(g_sph,'hmax',hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
@@ -266,7 +266,6 @@ P = [P pc];
 %**********************************
 %***** Removing points appearing twice
 %**********************************
-counter=1;
 j2=1;
 while j2<length(P)
   x=P(1,j2); y=P(2,j2); z=P(3,j2); 
@@ -318,4 +317,44 @@ ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
 axis image
+end
+
+
+%**********************************
+%***** Adding normal vectors to T matrix
+%*********************************
+T2=T(1:6,1:length(T));
+for k=1:length(T);
+    xc=0; yc=0; xc=0;
+    x1=P(1,T(1,k)); y1=P(2,T(1,k)); z1=P(3,T(1,k));
+    x2=P(1,T(2,k)); y2=P(2,T(2,k)); z2=P(3,T(2,k));
+    x3=P(1,T(3,k)); y3=P(2,T(3,k)); z3=P(3,T(3,k));
+    nx=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
+    ny=(z2-z1)*(x3-x1)-(z3-z1)*(x2-x1);
+    nz=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+    r=sqrt(nx^2+ny^2+nz^2); 
+          nx=nx/r; ny=ny/r; nz=nz/r;
+          if nx*(x1-xc)+ny*(y1-yc)+nz*(z1-zc)>0
+              T2(5,k)=nx;
+              T2(6,k)=ny;
+              T2(7,k)=nz;
+          else
+              T2(5,k)=-nx;
+              T2(6,k)=-ny;
+              T2(7,k)=-nz;
+          end
+end
+T=[T2(1:3,:);T2(5:7,:)];
+%**********************************
+%***** Plotting the normal vectors
+%*********************************
+if plot_normals==true
+for k=1:length(T)
+    xn=P(1,T(2,k)); yn=P(2,T(2,k)); zn=P(3,T(2,k));
+    quiver3(xn,yn,zn,T(4,k),T(5,k),T(6,k),'k')
+    hold on
+end
+axis equal
+fill3(x,y,z,'w','linewidth',1.3)
+hold off
 end
