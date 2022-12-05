@@ -225,8 +225,8 @@ for k=1:length(T);
     nx=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
     ny=(z2-z1)*(x3-x1)-(z3-z1)*(x2-x1);
     nz=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
-    dummy=sqrt(nx^2+ny^2+nz^2); 
-          nx=nx/dummy; ny=ny/dummy; nz=nz/dummy;
+    r=sqrt(nx^2+ny^2+nz^2); 
+          nx=nx/r; ny=ny/r; nz=nz/r;
           if nx*(x1-xc)+ny*(y1-yc)+nz*(z1-zc)>0
               T2(5,k)=nx;
               T2(6,k)=ny;
