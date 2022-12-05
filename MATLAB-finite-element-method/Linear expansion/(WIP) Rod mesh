@@ -1,9 +1,33 @@
+% Rod
 clear all
-R = 5;
-N_cyl = 10;
-N_sph = 5;
-H= 20;
 
+%********************************************************************
+%                           Settings
+%********************************************************************
+R = 5; % Radius.
+H= 20; % Height of cylinder, does not include the spherical ends.
+N = 10; %%%%% BUGGED
+
+% Choose what should be plotted
+plot_2D_cylinder_geometry_points = false;
+plot_2D_cylinder_mesh = false;
+plot_cylinder = false;
+
+plot_2D_sphere_geometry_points = false;
+plot_2D_sphere_mesh = false;
+
+plot_complete_rod = true;
+
+plot_normals=false; % Quite processing heavy
+%********************************************************************
+
+N_cyl = N;
+N_sph = 0.5*N_cyl;
+AR = (H+2*R)/(2*R);
+clear N
+%**********************************
+%***** Create and plot 2D cylinder geometry
+%**********************************
 for i=1:N_cyl % Bottom
     t1a=2*pi*R*(i-1)/N_cyl;
     t2a=0;
@@ -11,8 +35,10 @@ for i=1:N_cyl % Bottom
     t2b=0;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i,:)=row;
+    if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*'); % Colors can be changed to highlight what each loop is plotting
     hold on
+    end
 end
 for i=1:N_cyl % Top
     t1a=2*pi*R*(i)/N_cyl;
@@ -21,7 +47,9 @@ for i=1:N_cyl % Top
     t2b=H;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl,:)=row;
+    if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*'); 
+    end
 end
 for i=1:N_cyl % Left 
     t1a=0;
@@ -30,7 +58,9 @@ for i=1:N_cyl % Left
     t2b=H*(i-1)/(N_cyl);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*2,:)=row;
+    if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*');
+    end
 end
 for i=1:N_cyl % Right 
     t1a=2*pi*R;
@@ -39,16 +69,24 @@ for i=1:N_cyl % Right
     t2b=H*(i)/(N_cyl);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*3,:)=row;
+    if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*');
+    end
 end
+if plot_2D_cylinder_geometry_points==true
 axis image
-g_cyl = transpose(A);
 hold off
+end
+g_cyl = transpose(A); % Geometry matrix
 
+%**********************************
+%***** Creating and plotting the 2D cylinder mesh
+%**********************************
 hmax = 2; % Maximum distance between points.
 [p e t]=initmesh(g_cyl,'hmax',hmax);
 P_cyl = p; % Matrix containing positions of every corner plotted.
-T_cyl = t; % Matrix identifying which corners form a triangle. 
+T_cyl = t; % Matrix identifying which corners form a triangle.
+if plot_2D_cylinder_mesh==true
 h=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h,'linewidth',1.3,'color','k')
@@ -58,8 +96,11 @@ xlabel('t_2')
 ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
+end
 
-
+%**********************************
+%***** Transforming the cylinder to the x,y,z-plane
+%**********************************
 xc=0; % Center of the figure.
 yc=0; 
 zc=H;
@@ -81,6 +122,7 @@ n=n+length(p);
 %**********************************
 %***** Plotting the cylinder
 %**********************************
+if plot_cylinder==true
 for k = 1:length(tc)
    r1=pc(:,tc(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
    r2=pc(:,tc(2,k)); x2=r2(1); y2=r2(2); z2=r2(3);   
@@ -95,10 +137,10 @@ xlabel('x')
 ylabel('y')
 zlabel('z')
 axis image
-
+end
 
 %**********************************
-%***** Spheres
+%***** Creating and plotting the 2D sphere geometry
 %**********************************
 clear p e t A
 angle = pi/4;
@@ -110,8 +152,10 @@ for i=1:N_sph
     t2b=-angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(i,:)=row;
+    if plot_2D_sphere_geometry_points==true
     plot(t2a,t1a,'r*'); % Colors can be changed to highlight what each loop is plotting
     hold on
+    end
 end
 % Top:
 for i=1:N_sph 
@@ -120,7 +164,9 @@ for i=1:N_sph
     t2b=-angle*R+2*angle*R*(i)/N_sph;
     row=[2 t2a t2b t1a t1b 1 0];
     A(i+N_sph,:)=row;
+    if plot_2D_sphere_geometry_points==true
     plot(t2a,t1a,'r*'); 
+    end
 end
 % Right:
 for i=1:N_sph 
@@ -130,22 +176,27 @@ for i=1:N_sph
     t2b=angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(i+2*N_sph,:)=row;
+    if plot_2D_sphere_geometry_points==true
     plot(t2a,t1a,'r*'); 
+    end
 end
+if plot_2D_sphere_geometry_points==true
 set(gca,'fontsize',15)
     xlabel('t_2')
     ylabel('t_1')
 axis image
 hold off
+end
 g_sph = transpose(A); % Geometry matrix
 
 %**********************************
-%***** Construct 2D mesh
+%***** Creating and plotting the 2D sphere mesh
 %**********************************
 hmax = 2; % Maximum distance between points.
 [p e t]=initmesh(g_sph,'hmax',hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
+if plot_2D_sphere_mesh==true
 h_sph=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h_sph,'linewidth',1.3,'color','k')
@@ -155,6 +206,7 @@ xlabel('t_2')
 ylabel('t_1')
 set(gca,'fontsize',15)
 hold off
+end
 
 %**********************************
 %***** Transformation from t1,t2-plane to x,y,z-plane
@@ -181,7 +233,6 @@ td=zeros(7,length(t));
 td(1,:)=1; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc;
 ts=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td];
 n=n+length(p);
-
 
 %**********************************
 %***** Rotation and placement of the quarter half spheres
@@ -213,8 +264,45 @@ T = [T tc+add_length];
 P = [P pc];
 
 %**********************************
+%***** Removing points appearing twice
+%**********************************
+counter=1;
+j2=1;
+while j2<length(P)
+  x=P(1,j2); y=P(2,j2); z=P(3,j2); 
+  found=false;
+  jfound=0;
+   for j1=1:(j2-1)
+      if abs(P(1,j1)-x)<1e-7
+          if abs(P(2,j1)-y)<1e-7
+              if abs(P(3,j1)-z)<1e-7
+                 found=true; 
+                 jfound=j1;
+              end
+          end
+      end
+   end
+   if found==false
+       j2=j2+1;
+   end
+   if found==true
+       pd1=P(:,1:j2-1); pd2=P(:,j2+1:length(P));
+       P=[pd1 pd2];
+       for jt1=1:3
+           for jt2=1:length(T)
+               if T(jt1,jt2)==j2, T(jt1,jt2)=jfound; end
+               if T(jt1,jt2)>j2, T(jt1,jt2)=T(jt1,jt2)-1; end
+           end
+       end
+   end
+end
+
+%**********************************
 %***** Plotting the complete rod
 %**********************************
+if plot_complete_rod==true
+N = length(P) % Prints number of triangles
+AR % Prints aspect ratio
 clear x y z r1 r2 r3
 for k = 1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -230,3 +318,4 @@ ylabel('y')
 zlabel('z')
 set(gca,'fontsize',15)
 axis image
+end
