@@ -1,0 +1,283 @@
+clearvars -except P T
+
+% Choose material
+True_for_silver___false_for_gold = true;
+%******************************
+%**** Area calculation
+%******************************
+Area = zeros(length(T));
+for k = 1:length(T) 
+    r_1 = P(:,T(1,k));
+    r_12 = P(:,T(2,k)) - r_1;
+    r_13 = P(:,T(3,k))- r_1;
+    Area(k)=0.5*norm(cross((r_12),(r_13))); 
+end
+clear r_1 r_12 r_13
+
+%******************************
+%**** Calculating B
+%******************************
+B = zeros(length(P),length(P));
+B2 = zeros(length(P),3);
+for k = 1:length(T)
+    vh = @(u) 1 - u; % Creates a function v(u)=1-u
+    r_1 = P(:,T(1,k));
+    r_12 = P(:,T(2,k)) - r_1;
+    r_13 = P(:,T(3,k))- r_1;
+    for i = 1:length(P) 
+        if not(i == T(1,k)) % Principal values - checks if i is part of k
+            if not(i==T(2,k))
+                if not(i==T(3,k)) 
+                    % Distance in each direction from point i to triangle k:
+                    dx = @(u,v) (P(1,i)-(r_1(1) + r_12(1)*u + r_13(1)*v));
+                    dy = @(u,v) (P(2,i)-(r_1(2) + r_12(2)*u + r_13(2)*v));
+                    dz = @(u,v) (P(3,i)-(r_1(3) + r_12(3)*u + r_13(3)*v));
+                    % Distance:
+                    d_total = @(u,v) (sqrt(dx(u,v).^2+dy(u,v).^2+dz(u,v).^2));
+                    % Normals:
+                    nx = T(4,k);
+                    ny = T(5,k);
+                    nz = T(6,k);
+                    % Positions
+                    rx = @(u,v) r_1(1) + r_12(1).*u + r_13(1).*v;
+                    ry = @(u,v) r_1(2) + r_12(2).*u + r_13(2).*v;
+                    rz = @(u,v) r_1(3) + r_12(3).*u + r_13(3).*v;
+                    % (s'-r).*n
+                    fx =@(u,v)  (rx(u,v)-P(1,i)).*nx;
+                    fy =@(u,v)  (ry(u,v)-P(2,i)).*ny;
+                    fz =@(u,v)  (rz(u,v)-P(3,i)).*nz;
+                    
+                    fk1 = @(u,v)(1-u-v); % i=1
+                    fk2 = @(u) (u); % i=2
+                    fk3 = @(v) (v); % i=3
+                    
+                    inner_int_1 = @(u,v) (-1./(4.*pi.*d_total(u,v).*d_total(u,v).*d_total(u,v))).*(fx(u,v)+fy(u,v)+fz(u,v)).*fk1(u,v).*2.*Area(k);
+                    B2(i,1) = integral2(inner_int_1,0,1,0,vh);
+                    
+                    inner_int_2 = @(u,v) (-1./(4.*pi.*d_total(u,v).*d_total(u,v).*d_total(u,v))).*(fx(u,v)+fy(u,v)+fz(u,v)).*fk2(u).*2.*Area(k);
+                    B2(i,2) = integral2(inner_int_2,0,1,0,vh);
+
+                    inner_int_3 = @(u,v) (-1./(4.*pi.*d_total(u,v).*d_total(u,v).*d_total(u,v))).*(fx(u,v)+fy(u,v)+fz(u,v)).*fk3(v).*2.*Area(k);
+                    B2(i,3) = integral2(inner_int_3,0,1,0,vh);
+                else 
+                    B2(i,1) = 0;
+                    B2(i,2) = 0;
+                    B2(i,3) = 0;
+                end
+            else
+                B2(i,1) = 0;
+                B2(i,2) = 0;
+                B2(i,3) = 0;
+            end
+        else 
+            B2(i,1) = 0;
+            B2(i,2) = 0;
+            B2(i,3) = 0;
+        end
+    end
+    for i = 1:3
+        B(:,T(i,k)) = B2(:,i) + B(:,T(i,k));
+    end 
+    B2 = zeros(length(P),3);
+end
+clearvars -except B P T Area vh True_for_silver___false_for_gold
+
+%******************************
+%**** Calculating A
+%******************************
+A = zeros(length(P),length(P));
+A2 = zeros(length(P),3);
+
+for k = 1:length(T)
+    r_1 = P(:,T(1,k));
+    r_12 = P(:,T(2,k))-r_1;
+    r_13 = P(:,T(3,k))-r_1;
+    for i = 1:length(P)
+        % Distance in each direction from point i to triangle k:
+        dx = @(u,v) (P(1,i)-(r_1(1) + r_12(1)*u + r_13(1)*v));
+        dy = @(u,v) (P(2,i)-(r_1(2) + r_12(2)*u + r_13(2)*v));
+        dz = @(u,v) (P(3,i)-(r_1(3) + r_12(3)*u + r_13(3)*v));
+        d_total = @(u,v) (sqrt(dx(u,v).^2+dy(u,v).^2+dz(u,v).^2));
+        fk1 = @(u,v) (1-u-v);
+        fk2 = @(u) (u);
+        fk3 = @(v) (v);
+        if not(i==T(1,k))
+            if not(i==T(2,k))
+                if not(i==T(3,k))
+                    inner_int_1 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk1(u,v).*2.*Area(k);
+                    A2(i,1) = integral2(inner_int_1,0,1,0,vh);
+                    
+                    inner_int_2 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk2(u).*2.*Area(k);
+                    A2(i,2) = integral2(inner_int_2,0,1,0,vh);
+                    
+                    
+                    inner_int_3 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk3(v).*2.*Area(k);
+                    A2(i,3) = integral2(inner_int_3,0,1,0,vh);
+                else 
+                    inner_int_1 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk1(u,v).*2.*Area(k);
+                    A2(i,1) = integral2(inner_int_1,(10^-8),1,(10^-8),vh);
+                    
+                    inner_int_2 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk2(u).*2.*Area(k);
+                    A2(i,2) = integral2(inner_int_2,(10^-8),1,(10^-8),vh);
+                    
+                    inner_int_3 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk3(v).*2.*Area(k);
+                    A2(i,3) = integral2(inner_int_3,(10^-8),1,(10^-8),vh); 
+                end
+            else
+                inner_int_1 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk1(u,v).*2.*Area(k);
+                A2(i,1) = integral2(inner_int_1,(10^-8),1,(10^-8),vh);
+                    
+                inner_int_2 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk2(u).*2.*Area(k);
+                A2(i,2) = integral2(inner_int_2,(10^-8),1,(10^-8),vh);
+                    
+                inner_int_3 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk3(v).*2.*Area(k);
+                A2(i,3) = integral2(inner_int_3,(10^-8),1,(10^-8),vh); 
+            end
+        else
+            inner_int_1 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk1(u,v).*2.*Area(k);
+            A2(i,1) = integral2(inner_int_1,(10^-8),1,(10^-8),vh);
+                    
+            inner_int_2 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk2(u).*2.*Area(k);
+            A2(i,2) = integral2(inner_int_2,(10^-8),1,(10^-8),vh);
+                    
+            inner_int_3 = @(u,v) (1./(4.*pi.*d_total(u,v))).*fk3(v).*2.*Area(k);
+            A2(i,3) = integral2(inner_int_3,(10^-8),1,(10^-8),vh); 
+        end
+    end
+    for i = 1:3
+        A(:,T(i,k)) = A2(:,i) + A(:,T(i,k));
+    end 
+    A2 = zeros(length(P),3);
+end
+clearvars -except A B P T Area True_for_silver___false_for_gold
+
+%******************************
+%**** Sigma
+%******************************
+% Finding the k' triangles which share point i 
+for i=1:length(P)
+    n = 1;
+    for j = 1:length(T)
+        if any(i==T(1:3,j))
+            K(i,n) = j;
+            n = n +1;
+        end
+    end 
+end
+
+%Average normal vector for node i 
+Sigma = zeros(length(P),size(K,2));
+for i = 1:length(P)
+    for kave = 1:size(K,2)
+        if not(K(i,kave)==0) 
+            Navek(1:3,kave) = Area(K(i,kave)).*T(4:6,K(i,kave));
+        else
+            Navek(1:3,kave) = [0;0;0];
+        end
+    end
+    % Normalize vector
+    N_ave_i = (1/norm(sum(Navek,2))).*sum(Navek,2);
+        for o = 1:3
+            for z=1:size(K,2)
+                if not(K(i,z)==0)
+                    DistKprime(o,z) =  norm(P(:,i) - P(:,T(o,K(i,z))));
+                else
+                    DistKprime(o,z) = 0;
+                end
+            end
+        end
+        deltamax = max(DistKprime,[],'all');
+        r_i = P(:,i) + ((1/10000)*deltamax).*N_ave_i;
+        % For k' triangles 
+        for kp = 1:size(K,2)
+            if not(K(i,kp)==0)
+                % Defining vectors to move in the k_prime triangle
+                r_1 = P(:,T(1,K(i,kp)));
+                r_12 = P(:,T(2,K(i,kp))) - P(:,T(1,K(i,kp)));
+                r_13 = P(:,T(3,K(i,kp)))- P(:,T(1,K(i,kp)));
+                vh = @(u) 1 - u;
+                
+                dx = @(u,v) (r_i(1,1)-(r_1(1) + r_12(1)*u + r_13(1)*v));
+                dy = @(u,v) (r_i(2,1)-(r_1(2) + r_12(2)*u + r_13(2)*v));
+                dz = @(u,v) (r_i(3,1)-(r_1(3) + r_12(3)*u + r_13(3)*v));
+                    
+                d_total =@(u,v) (sqrt(dx(u,v).^2+dy(u,v).^2+dz(u,v).^2));
+                fx =@(u,v)  ((r_1(1) + r_12(1).*u + r_13(1).*v)-r_i(1,1)).*T(4,K(i,kp));
+                fy =@(u,v)  ((r_1(2) + r_12(2).*u + r_13(2).*v)-r_i(2,1)).*T(5,K(i,kp));
+                fz =@(u,v)  ((r_1(3) + r_12(3).*u + r_13(3).*v)-r_i(3,1)).*T(6,K(i,kp));
+
+                inner_int_1 = @(u,v) (-1./(4.*pi.*d_total(u,v).*d_total(u,v).*d_total(u,v))).*(fx(u,v)+fy(u,v)+fz(u,v))*2.*Area(K(i,kp));
+                Sigma(i,kp) = integral2(inner_int_1,0,1,0,vh);
+            else
+                Sigma(i,kp) = 0 ;
+            end
+        end
+
+end
+Sigma_i = sum(Sigma,2).*eye(length(P));
+clearvars -except A B P T Sigma_i Area True_for_silver___false_for_gold
+
+%******************************
+%**** Phi
+%******************************
+E_0 = 1;
+phi_0 = (-E_0)*(P(1,:)./3+P(2,:)./3+P(3,:))./3; % Change orientation of E-field
+
+
+%******************************
+%**** P_abs
+%******************************
+n_water = 1.333;
+eps_water = n_water^2;
+eps_0 = 8.85418782*10^(-12);
+mu_0 = 1.257*10^(-6);
+n_0 = sqrt(mu_0*eps_0);
+E_0 = 1; %Applied electric field
+vec_0 = zeros(length(P),1);
+img = sqrt(-1);
+load nrau.m
+load nrag.m
+load niau.m
+load niag.m
+data = [nrag niag(:,2) nrau(:,2) niau(:,2)];
+wavelength_micrometer = (data(:,1));
+wl = (10^-6).*wavelength_micrometer; %wavelength in metres
+wavelength = linspace(300*10^(-9),900*10^(-9),400);
+n_data_Ag = data(:,2);
+k_data_Ag = data(:,3);
+n_data_Au = data(:,4);
+k_data_Au = data(:,5);
+n_Au = interp1(wl,n_data_Au,wavelength,'makima');
+k_Au = interp1(wl,k_data_Au,wavelength,'makima');
+n_Ag = interp1(wl,n_data_Ag,wavelength,'makima');
+k_Ag = interp1(wl,k_data_Ag,wavelength,'makima');
+eps_Ag = (n_Ag+img.*k_Ag).^2;
+eps_Au = (n_Au+img.*k_Au).^2;
+if True_for_silver___false_for_gold==true
+    eps = eps_Ag;
+else
+    eps = eps_Au;
+end
+Matrix = [2,1,1;1,2,1;1,1,2];
+for i =1:length(wavelength)
+    %omega = (2*pi*c)/wavelength(i);
+    sys = [(eye(length(P))-Sigma_i -B),(A);(Sigma_i+B),((-eps_water/eps(i)).*A)];
+    anssys = (inv(sys))*[(phi_0');vec_0];
+    phi_N = anssys((1:length(P)),1);
+    psi_N = anssys((length(P)+1):(2*length(P)),1);
+    
+    for k = 1:length(T)
+        phi_k = [ phi_N(T(1,k),1),phi_N(T(2,k),1),phi_N(T(3,k),1)];
+        psi_k = [ psi_N(T(1,k),1),psi_N(T(2,k),1),psi_N(T(3,k),1)];
+        psi_k = transpose(psi_k);
+        P_abs_k(k) = (1/12).*Area(k).*(phi_k*(Matrix*conj(psi_k)));
+    end
+    C_abs(i) = 2.*pi.*imag(eps(i))./(wavelength(i).*n_water.*(abs(E_0)).^2).*real(sum(conj(eps_water./eps(i)).*P_abs_k,2));
+end
+
+plot(wavelength*10^9,C_abs,'linewidth',1.3)
+hold on
+xlabel('Wavelength [nm]')
+ylabel('Absorption')
+title('Linear expansion')
+hold off
