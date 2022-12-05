@@ -26,6 +26,7 @@ N_cyl2 = round(H*N_cyl/(2*pi*R)); % Number of points for the cylinder height
 N_sph = round(0.25*N_cyl);
 AR = (H+2*R)/(2*R);
 hmax = round(2*pi*R/N_cyl);
+
 %**********************************
 %***** Create and plot 2D cylinder geometry
 %**********************************
