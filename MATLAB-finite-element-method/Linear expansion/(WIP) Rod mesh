@@ -6,15 +6,15 @@ clear all
 %********************************************************************
 R = 5; % Radius.
 H= 20; % Height of cylinder, does not include the spherical ends.
-N = 30; %%%%% BUGGED
+N = 10;
 
 % Choose what should be plotted
-plot_2D_cylinder_geometry_points = true;
-plot_2D_cylinder_mesh = true;
-plot_cylinder = true;
+plot_2D_cylinder_geometry_points = false;
+plot_2D_cylinder_mesh = false;
+plot_cylinder = false;
 
-plot_2D_sphere_geometry_points = true;
-plot_2D_sphere_mesh = true;
+plot_2D_sphere_geometry_points = false;
+plot_2D_sphere_mesh = false;
 
 plot_complete_rod = true;
 
