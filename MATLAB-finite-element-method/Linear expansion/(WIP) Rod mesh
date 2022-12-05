@@ -194,7 +194,7 @@ g_sph = transpose(A); % Geometry matrix
 %***** Creating and plotting the 2D sphere mesh
 %**********************************
 %hmax = 2; % Maximum distance between points.
-[p e t]=initmesh(g_sph,'hmax',hmax);
+[p e t]=initmesh(g_sph,'hmax',hmax+0.5*hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
 if plot_2D_sphere_mesh==true
