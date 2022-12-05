@@ -319,7 +319,6 @@ set(gca,'fontsize',15)
 axis image
 end
 
-
 %**********************************
 %***** Adding normal vectors to T matrix
 %*********************************
@@ -345,6 +344,7 @@ for k=1:length(T);
           end
 end
 T=[T2(1:3,:);T2(5:7,:)];
+
 %**********************************
 %***** Plotting the normal vectors
 %*********************************
