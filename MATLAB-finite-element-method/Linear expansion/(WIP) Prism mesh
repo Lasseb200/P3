@@ -1,16 +1,19 @@
+% Prism
 clear all
 
-L = 15;
-H = sqrt(3)/2*L;
-N_l = 10;
-D=5;
-R=D/2;
+%********************************************************************
+%                           Settings
+%********************************************************************
+% Note: not all N, L and D values are compatible with each other
+L = 30; % Sidelength
+D=10; % Diameter / Height
+N = 12;
 
 plot_tri_geometry = false;
 plot_2D_tri_mesh = false;
 plot_tri_surfaces = false;
 
-plot_cyl_geometry=false;
+plot_cyl_geometry= false;
 plot_2D_cyl_mesh = false;
 plot_prism_without_corners = false;
 
@@ -18,6 +21,18 @@ plot_sph_geometry = false;
 plot_2D_sph_mesh = false;
 
 plot_final_prism = true;
+
+plot_normals=false;
+%********************************************************************
+
+H = sqrt(3)/2*L;
+R=D/2;
+N_l=N; clear N
+hmax = ceil(2*pi*R/N_l);
+
+%**********************************
+%***** Create and plot 2D triangle geometry
+%**********************************
 
 for i=1:N_l % Bottom
     t1a=L*(i-1)/N_l;
@@ -58,11 +73,16 @@ axis image
 hold off
 end
 g_tri = transpose(A);
-hmax = 5; % Maximum distance between points.
-[p e t]=initmesh(g_tri,'hmax',hmax);
+
+%**********************************
+%***** Create and plot 2D triangle mesh
+%**********************************
+
+%hmax = 5; % Maximum distance between points.
+[p,e,t]=initmesh(g_tri,'hmax',hmax);
 P_tri = p; % Matrix containing positions of every corner plotted.
 T_tri = t; % Matrix identifying which corners form a (small) triangle.
-if plot_2D_tri_mesh==true;
+if plot_2D_tri_mesh==true
 h_tri=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h_tri,'linewidth',1.3,'color','k')
@@ -97,11 +117,11 @@ set(gca,'fontsize',15)
 axis image
 end
 
-
 %**********************************
-%***** Cylinders
+%***** Create and plot 2D cylinder geometry
 %**********************************
-N_cyl = N_l;
+N_cyl = ceil(pi*R*N_l/L); % Rounds up
+N_cyl2 = ceil(H*N_cyl/(pi*R));
 
 for i=1:N_cyl % Bottom
     t1a=pi*R*(i-1)/N_cyl;
@@ -126,26 +146,26 @@ for i=1:N_cyl % Top
     plot(t1a,t2a,'r*'); 
     end
 end
-for i=1:N_cyl % Left 
+for i=1:N_cyl2 % Left 
     t1a=0;
-    t2a=L*(i)/(N_cyl);
+    t2a=L*(i)/(N_cyl2);
     t1b=0;
-    t2b=L*(i-1)/(N_cyl);
+    t2b=L*(i-1)/(N_cyl2);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*2,:)=row;
     if plot_cyl_geometry==true
-    plot(t1a,t2a,'r*');
+    plot(t1a,t2a,'b*');
     end
 end
-for i=1:N_cyl % Right 
+for i=1:N_cyl2 % Right 
     t1a=pi*R;
-    t2a=L*(i-1)/(N_cyl);
+    t2a=L*(i-1)/(N_cyl2);
     t1b=pi*R;
-    t2b=L*(i)/(N_cyl);
+    t2b=L*(i)/(N_cyl2);
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+N_cyl*3,:)=row;
+    A(i+N_cyl*2+N_cyl2,:)=row;
     if plot_cyl_geometry==true
-    plot(t1a,t2a,'r*');
+    plot(t1a,t2a,'b*');
     end
 end
 if plot_cyl_geometry==true
@@ -154,8 +174,8 @@ hold off
 end
 g_cyl = transpose(A);
 
-hmax = 2; % Maximum distance between points.
-[p e t]=initmesh(g_cyl,'hmax',hmax);
+%hmax = 2; % Maximum distance between points.
+[p,e,t]=initmesh(g_cyl,'hmax',hmax);
 P_cyl = p; % Matrix containing positions of every corner plotted.
 T_cyl = t; % Matrix identifying which corners form a triangle.
 if plot_2D_cyl_mesh
@@ -208,7 +228,7 @@ T = [tt tc+[length(pt);length(pt);length(pt);0;0;0;0;0;0;0]];
 P = [pt pc];
 
 
-if plot_prism_without_corners==true;
+if plot_prism_without_corners==true
 clear x y z r1 r2 r3
 for k = 1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -226,14 +246,10 @@ set(gca,'fontsize',15)
 axis image
 end
 
-
-
-
-
 %**********************************
-%***** Spheres
+%***** Spherical corners
 %**********************************
-N_sph = N_cyl;
+N_sph = ceil(2*pi*R*N_l/(3*L));
 clear p e t A x y z
 angle = pi/3;
 % Left:
@@ -285,10 +301,10 @@ g_sph = transpose(A); % Geometry matrix
 %***** Construct 2D mesh
 %**********************************
 hmax = 5; % Maximum distance between points.
-[p e t]=initmesh(g_sph,'hmax',hmax);
+[p,e,t]=initmesh(g_sph,'hmax',hmax+0.5*hmax);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle.
-if plot_2D_sph_mesh==true;
+if plot_2D_sph_mesh==true
 h_sph=pdemesh(p,e,t); % Plots the mesh
 hold on
 set(h_sph,'linewidth',1.3,'color','k')
@@ -344,7 +360,43 @@ ps = [ps ps2 ps3 ps4 ps5 ps6];
 T = [T ts+[length(P);length(P);length(P);0;0;0;0;0;0;0]];
 P = [P ps];
 
-if plot_final_prism==true;
+%**********************************
+%***** Removing points appearing twice
+%**********************************
+j2=1;
+while j2<length(P)
+  x=P(1,j2); y=P(2,j2); z=P(3,j2); 
+  found=false;
+  jfound=0;
+   for j1=1:(j2-1)
+      if abs(P(1,j1)-x)<1e-7
+          if abs(P(2,j1)-y)<1e-7
+              if abs(P(3,j1)-z)<1e-7
+                 found=true; 
+                 jfound=j1;
+              end
+          end
+      end
+   end
+   if found==false
+       j2=j2+1;
+   end
+   if found==true
+       pd1=P(:,1:j2-1); pd2=P(:,j2+1:length(P));
+       P=[pd1 pd2];
+       for jt1=1:3
+           for jt2=1:length(T)
+               if T(jt1,jt2)==j2, T(jt1,jt2)=jfound; end
+               if T(jt1,jt2)>j2, T(jt1,jt2)=T(jt1,jt2)-1; end
+           end
+       end
+   end
+end
+
+%**********************************
+%***** Plotting the complete prism
+%**********************************
+if plot_final_prism==true
 clear x y z r1 r2 r3
 for k = 1:length(T)
    r1=P(:,T(1,k)); x1=r1(1); y1=r1(2); z1=r1(3);
@@ -361,3 +413,60 @@ zlabel('z')
 set(gca,'fontsize',15)
 axis image
 end
+
+%**********************************
+%***** Adding normal vectors to T matrix
+%**********************************
+T2=T(1:6,1:length(T));
+   for k=1:length(T)
+      if T(4,k)==1 || T(4,k)==2
+          %part of sphere
+          xc=0; yc=0; zc=0;
+          x1=P(1,T(1,k)); y1=P(2,T(1,k)); z1=P(3,T(1,k));
+          x2=P(1,T(2,k)); y2=P(2,T(2,k)); z2=P(3,T(2,k));
+          x3=P(1,T(3,k)); y3=P(2,T(3,k)); z3=P(3,T(3,k));
+          nx=(y2-y1)*(z3-z1)-(y3-y1)*(z2-z1);
+          ny=(z2-z1)*(x3-x1)-(z3-z1)*(x2-x1);
+          nz=(x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+          dummy=sqrt(nx^2+ny^2+nz^2); 
+          nx=nx/dummy; ny=ny/dummy; nz=nz/dummy;
+          if nx*(x1-xc)+ny*(y1-yc)+nz*(z1-zc)>0
+              T2(5,k)=nx;
+              T2(6,k)=ny;
+              T2(7,k)=nz;
+          else
+              T2(5,k)=-nx;
+              T2(6,k)=-ny;
+              T2(7,k)=-nz;
+          end
+      end
+      if T(4,k)==3 && (P(3,T(3,k))==-B/2 || P(3,T(2,k))==-B/2 || P(3,T(1,k))==-B/2)
+          T2(5,k)=0;
+          T2(6,k)=0;
+          T2(7,k)=-1;
+      end
+      
+      if T(4,k)==3 && (P(3,T(3,k))==B/2 || P(3,T(2,k))==B/2 || P(3,T(1,k))==B/2)
+          T2(5,k)=0;
+          T2(6,k)=0;
+          T2(7,k)=1;
+      end
+      
+   end
+clear T
+T=[T2(1:3,:);T2(5:7,:)];
+
+%**********************************
+%***** Plotting the normal vectors
+%*********************************
+if plot_normals==true
+for k=1:length(T)
+    xn=P(1,T(2,k)); yn=P(2,T(2,k)); zn=P(3,T(2,k));
+    quiver3(xn,yn,zn,T(4,k),T(5,k),T(6,k),'k')
+    hold on
+end
+axis equal
+fill3(x,y,z,'w','linewidth',1.3)
+hold off
+end
+
