@@ -155,7 +155,7 @@ axis image
 end
 
 %**********************************
-%***** Remove points appearing twice
+%***** Removing points appearing twice
 %**********************************
 counter=1;
 j2=1;
