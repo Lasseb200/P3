@@ -7,15 +7,15 @@ clear all
 % Note: not all N, H and R values are compatible with each other
 R = 5; % Radius.
 H= 20; % Height of cylinder, does not include the spherical ends.
-N = 15;
+N = 4;
 
 % Choose what should be plotted
-plot_2D_cylinder_geometry_points = false;
-plot_2D_cylinder_mesh = false;
-plot_cylinder = false;
+plot_2D_cylinder_geometry_points = true;
+plot_2D_cylinder_mesh = true;
+plot_cylinder = true;
 
-plot_2D_sphere_geometry_points = false;
-plot_2D_sphere_mesh = false;
+plot_2D_sphere_geometry_points = true;
+plot_2D_sphere_mesh = true;
 
 plot_complete_rod = true;
 
@@ -23,18 +23,24 @@ plot_normals=false; % Quite processing heavy
 %********************************************************************
 
 N_cyl = N; clear N
-N_cyl2 = ceil(H*N_cyl/(2*pi*R)); % Rounds up
-N_sph = ceil(0.25*N_cyl);
+%N_cyl2 = round(2*H*N_cyl/(pi*R)); % Rounds up
+%N_sph = ceil(0.25*N_cyl);
+N_sph = N_cyl;
 AR = (H+2*R)/(2*R);
-hmax = round(2*pi*R/N_cyl);
+hmax = round(pi*R/(2*N_cyl));
 
 %**********************************
 %***** Create and plot 2D cylinder geometry
 %**********************************
-for i=1:N_cyl % Bottom
-    t1a=2*pi*R*(i-1)/N_cyl;
+%N_cyl2 = round(N_cyl*R/H);
+N_cyl2 = N_sph;
+if N_sph == 2;
+    N_cyl2 = 4;
+end
+for i=1:N_cyl2 % Bottom
+    t1a=pi*R/2*(i-1)/N_cyl2;
     t2a=0;
-    t1b=2*pi*R*(i)/N_cyl;
+    t1b=pi*R/2*(i)/N_cyl2;
     t2b=0;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i,:)=row;
@@ -43,35 +49,35 @@ for i=1:N_cyl % Bottom
     hold on
     end
 end
-for i=1:N_cyl % Top
-    t1a=2*pi*R*(i)/N_cyl;
+for i=1:N_cyl2 % Top
+    t1a=pi*R/2*(i)/N_cyl2;
     t2a=H;
-    t1b=2*pi*R*(i-1)/N_cyl;
+    t1b=pi*R/2*(i-1)/N_cyl2;
     t2b=H;
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+N_cyl,:)=row;
+    A(i+N_cyl2,:)=row;
     if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*'); 
     end
 end
-for i=1:N_cyl2 % Left 
+for i=1:N_cyl % Left 
     t1a=0;
-    t2a=H*(i)/(N_cyl2);
+    t2a=H*(i)/(N_cyl);
     t1b=0;
-    t2b=H*(i-1)/(N_cyl2);
+    t2b=H*(i-1)/(N_cyl);
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+N_cyl*2,:)=row;
+    A(i+N_cyl2*2,:)=row;
     if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*');
     end
 end
-for i=1:N_cyl2 % Right 
-    t1a=2*pi*R;
-    t2a=H*(i-1)/(N_cyl2);
-    t1b=2*pi*R;
-    t2b=H*(i)/(N_cyl2);
+for i=1:N_cyl % Right 
+    t1a=pi*R/2;
+    t2a=H*(i-1)/(N_cyl);
+    t1b=pi*R/2;
+    t2b=H*(i)/(N_cyl);
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+N_cyl*2+N_cyl2,:)=row;
+    A(i+N_cyl+N_cyl2*2,:)=row;
     if plot_2D_cylinder_geometry_points==true
     plot(t1a,t2a,'r*');
     end
@@ -121,6 +127,18 @@ td(1,:)=2; td(2,:)=xc; td(3,:)=yc; td(4,:)=zc; % The '2' is to indicate that the
 tc=[t(1,:)+n;t(2,:)+n;t(3,:)+n;td]; 
 n=n+length(p);
 
+
+angle = -pi/4;
+pc = [cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*pc;
+angle = pi/2;
+pc2 = [cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*pc;
+pc3 = [cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*pc2;
+pc4 = [cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*pc3;
+
+add_length = [length(pc);length(pc);length(pc);0;0;0;0;0;0;0];
+pc = [pc pc2 pc3 pc4];
+tc = [tc tc+add_length tc+add_length*2 tc+add_length*3];
+
 %**********************************
 %***** Plotting the cylinder
 %**********************************
@@ -133,7 +151,7 @@ for k = 1:length(tc)
    y_cyl(:,k)=[y1 y2 y3 y1];
    z_cyl(:,k)=[z1 z2 z3 z1];
 end
-fill3(x_cyl,y_cyl,z_cyl,'w','linewidth',1.3)
+fill3(x_cyl,y_cyl,z_cyl,'w','linewidth',2)
 set(gca,'fontsize',15)
 xlabel('x')
 ylabel('y')
@@ -146,11 +164,12 @@ end
 %**********************************
 clear p e t A
 angle = pi/4;
+N_sph2 = N_sph+1
 % Left:
-for i=1:N_sph 
-    t1a=pi/2*R*(i-1)/N_sph;
+for i=1:N_sph2 
+    t1a=pi/2*R*(i-1)/N_sph2;
     t2a=-angle*R*sin(t1a/R);
-    t1b=pi/2*R*(i)/N_sph;
+    t1b=pi/2*R*(i)/N_sph2;
     t2b=-angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
     A(i,:)=row;
@@ -165,19 +184,19 @@ for i=1:N_sph
     t2a=-angle*R+2*angle*R*(i-1)/N_sph;
     t2b=-angle*R+2*angle*R*(i)/N_sph;
     row=[2 t2a t2b t1a t1b 1 0];
-    A(i+N_sph,:)=row;
+    A(i+N_sph2,:)=row;
     if plot_2D_sphere_geometry_points==true
     plot(t2a,t1a,'r*'); 
     end
 end
 % Right:
-for i=1:N_sph 
-    t1a=pi/2*R*(N_sph-i+1)/N_sph;
+for i=1:N_sph2 
+    t1a=pi/2*R*(N_sph2-i+1)/N_sph2;
     t2a=angle*R*sin(t1a/R);
-    t1b=pi/2*R*(N_sph-i)/N_sph;
+    t1b=pi/2*R*(N_sph2-i)/N_sph2;
     t2b=angle*R*sin(t1b/R);
     row=[2 t2a t2b t1a t1b 1 0];
-    A(i+2*N_sph,:)=row;
+    A(i+N_sph2+N_sph,:)=row;
     if plot_2D_sphere_geometry_points==true
     plot(t2a,t1a,'r*'); 
     end
@@ -194,8 +213,9 @@ g_sph = transpose(A); % Geometry matrix
 %**********************************
 %***** Creating and plotting the 2D sphere mesh
 %**********************************
-%hmax = 2; % Maximum distance between points.
-[p,e,t]=initmesh(g_sph,'hmax',hmax+0.5*hmax);
+%hmax = pi/2*R/N_sph*1.3; % Maximum distance between points.
+hmax = 100;
+[p,e,t]=initmesh(g_sph,'hmax',hmax*1.3);
 P_sph = p; % Matrix containing positions of every corner plotted.
 T_sph = t; % Matrix identifying which corners form a triangle. 
 if plot_2D_sphere_mesh==true
