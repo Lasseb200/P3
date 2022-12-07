@@ -7,14 +7,14 @@ clear all
 % Note: not all N, L and D values are compatible with each other
 L = 30; % Sidelength
 D=10; % Diameter / Height
-N = 8;
+N = 4;
 
-plot_tri_geometry = false;
-plot_2D_tri_mesh = false;
+plot_tri_geometry = true;
+plot_2D_tri_mesh = true;
 plot_tri_surfaces = false;
 
-plot_cyl_geometry= false;
-plot_2D_cyl_mesh = false;
+plot_cyl_geometry= true;
+plot_2D_cyl_mesh = true;
 plot_prism_without_corners = false;
 
 plot_sph_geometry = false;
@@ -30,14 +30,22 @@ R=D/2;
 N_l=N; clear N
 hmax = ceil(2*pi*R/N_l);
 
+
+
+N_cyl = ceil(pi*R*N_l/(L)); % Rounds up
+N_cyl2 = ceil(H*N_cyl/(pi*R));
+N_cyl = ceil(N_cyl*0.5);
+
+
+
 %**********************************
 %***** Create and plot 2D triangle geometry
 %**********************************
 
-for i=1:N_l % Bottom
-    t1a=L*(i-1)/N_l;
+for i=1:N_cyl2 % Bottom
+    t1a=L*(i-1)/N_cyl2;
     t2a=0;
-    t1b=L*i/N_l;
+    t1b=L*i/N_cyl2;
     t2b=0;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i,:)=row;
@@ -46,24 +54,24 @@ for i=1:N_l % Bottom
     hold on
     end
 end
-for i=1:N_l % Left
-    t1a=L*i/(2*N_l);
-    t2a=H*i/N_l;
-    t1b=L*(i-1)/(2*N_l);
-    t2b=H*(i-1)/N_l;
+for i=1:N_cyl2 % Left
+    t1a=L*i/(2*N_cyl2);
+    t2a=H*i/N_cyl2;
+    t1b=L*(i-1)/(2*N_cyl2);
+    t2b=H*(i-1)/N_cyl2;
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+N_l,:)=row;
+    A(i+N_cyl2,:)=row;
     if plot_tri_geometry==true
     plot(t1a,t2a,'r*');
     end
 end
-for i=1:N_l % Right
-    t1a=L-L*(i-1)/(2*N_l);
-    t2a=H*(i-1)/N_l;
-    t1b=L-L*i/(2*N_l);
-    t2b=H*i/N_l;
+for i=1:N_cyl2 % Right
+    t1a=L-L*(i-1)/(2*N_cyl2);
+    t2a=H*(i-1)/N_cyl2;
+    t1b=L-L*i/(2*N_cyl2);
+    t2b=H*i/N_cyl2;
     row=[2 t2a t2b t1a t1b 2 0];
-    A(i+2*N_l,:)=row;
+    A(i+2*N_cyl2,:)=row;
     if plot_tri_geometry==true
     plot(t1a,t2a,'r*');
     end
@@ -77,7 +85,7 @@ g_tri = transpose(A);
 %**********************************
 %***** Create and plot 2D triangle mesh
 %**********************************
-
+clear A
 %hmax = 5; % Maximum distance between points.
 [p,e,t]=initmesh(g_tri,'hmax',hmax);
 P_tri = p; % Matrix containing positions of every corner plotted.
@@ -120,13 +128,12 @@ end
 %**********************************
 %***** Create and plot 2D cylinder geometry
 %**********************************
-N_cyl = ceil(pi*R*N_l/L); % Rounds up
-N_cyl2 = ceil(H*N_cyl/(pi*R));
+
 
 for i=1:N_cyl % Bottom
-    t1a=pi*R*(i-1)/N_cyl;
+    t1a=pi*R/2*(i-1)/N_cyl;
     t2a=0;
-    t1b=pi*R*(i)/N_cyl;
+    t1b=pi*R/2*(i)/N_cyl;
     t2b=0;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i,:)=row;
@@ -136,9 +143,9 @@ for i=1:N_cyl % Bottom
     end
 end
 for i=1:N_cyl % Top
-    t1a=pi*R*(i)/N_cyl;
+    t1a=pi*R/2*(i)/N_cyl;
     t2a=L;
-    t1b=pi*R*(i-1)/N_cyl;
+    t1b=pi*R/2*(i-1)/N_cyl;
     t2b=L;
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl,:)=row;
@@ -158,9 +165,9 @@ for i=1:N_cyl2 % Left
     end
 end
 for i=1:N_cyl2 % Right 
-    t1a=pi*R;
+    t1a=pi*R/2;
     t2a=L*(i-1)/(N_cyl2);
-    t1b=pi*R;
+    t1b=pi*R/2;
     t2b=L*(i)/(N_cyl2);
     row=[2 t2a t2b t1a t1b 2 0];
     A(i+N_cyl*2+N_cyl2,:)=row;
@@ -219,9 +226,13 @@ angle =2*pi/3;
 pc2 = [cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*pc2;
 angle = -2*pi/3;
 pc3 = [cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*pc+[0;L;0];
+pc4 = [1 0 0;0 1 0;0 0 -1]*pc;
+pc5 = [1 0 0;0 1 0;0 0 -1]*pc2;
+pc6 = [1 0 0;0 1 0;0 0 -1]*pc3;
 
-tc = [tc tc+[length(pc);length(pc);length(pc);0;0;0;0;0;0;0] tc+[length(pc);length(pc);length(pc);0;0;0;0;0;0;0]*2];
-pc=[pc pc2 pc3];
+add_length = [length(pc);length(pc);length(pc);0;0;0;0;0;0;0];
+tc = [tc tc+add_length tc+add_length*2 tc+add_length*3 tc+add_length*4 tc+add_length*5];
+pc=[pc pc2 pc3 pc4 pc5 pc6];
 
 tt = [tt;zeros(1,length(tt));zeros(1,length(tt));ones(1,length(tt));zeros(1,length(tt));zeros(1,length(tt));zeros(1,length(tt))];
 T = [tt tc+[length(pt);length(pt);length(pt);0;0;0;0;0;0;0]];
@@ -397,7 +408,7 @@ end
 %***** Rotating the prism
 %**********************************
 % Here, the prism can be rotated around the z-axis by any angle.
-angle = 2*pi;
+angle = 2*pi+pi/2;
 P=[cos(angle) -sin(angle) 0;sin(angle) cos(angle) 0;0 0 1]*P;
 
 % Here, the prism can be rotated around the x-axis by any angle.
@@ -470,14 +481,14 @@ T2=T(1:6,1:length(T));
    end
 clear T
 T=[T2(1:3,:);T2(5:7,:)];
-
+N = length(T)
 %**********************************
 %***** Plotting the normal vectors
 %*********************************
 if plot_normals==true
 for k=1:length(T)
     xn=P(1,T(2,k)); yn=P(2,T(2,k)); zn=P(3,T(2,k));
-    quiver3(xn,yn,zn,T(4,k),T(5,k),T(6,k),'k')
+    quiver3(xn,yn,zn,T(4,k)*5,T(5,k)*5,T(6,k)*5,'r')
     hold on
 end
 axis equal
