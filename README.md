@@ -8,7 +8,7 @@ The code is written in plain text, and is meant to be copy/pasted into the MATLA
   2. Run the 3D point model for either [spheres](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20sphere), [rods](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20rod) or [triangular prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20prism).
   3. Run the [absorption calculation code](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20calculation). Make sure that the variables from the 3D model haven't been cleared.
 
-<img src="Sphere.png" width="350"> <img src="Rod.png" width="350">
+<img src="Sphere.png" width="350"> <img src="Rod.png" width="350"> <img src="Prism.png" width="350">
 ## Linear expansion
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
   2. Ensure that the MATLAB add-on '[Partial Differential Equation Toolbox](https://se.mathworks.com/products/pde.html)' is installed.
