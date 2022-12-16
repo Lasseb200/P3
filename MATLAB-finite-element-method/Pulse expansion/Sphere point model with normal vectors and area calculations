@@ -1,8 +1,19 @@
+% Pulse sphere
 clear all
+
+%********************************************************************
+%                           Settings
+%*******************************************************************
+
 R = 5;
 N_phi = 20;
+
+Plot_sphere=true;
+Plot_normals=true;
+
+%*******************************************************************
+
 N_theta = N_phi/2;
-N = N_theta*N_phi
 n = 1;
 for i_theta = 1:N_theta
 for i_phi = 1:N_phi
@@ -19,13 +30,18 @@ surface = R.*[(x);(y);(z)];
 r_norm = (surface)./R;
 area = area_i;
 F = [surface;area;r_norm];
+N=length(F) % Display number of points
+if Plot_sphere==true
 plot3(surface(1,:),surface(2,:),surface(3,:),'k.')
 hold on
 set(gca,'visible','off')
 axis equal
 hold off
+end
+if Plot_normals==true
 quiver3(F(1,:),F(2,:),F(3,:),F(5,:),F(6,:),F(7,:),'k')
 hold on
 set(gca,'visible','off')
 axis equal
 hold off
+end
