@@ -1,7 +1,19 @@
+% Pulse prism
 clear all
+
+%********************************************************************
+%                           Settings
+%*******************************************************************
+
 N=20;
 L=30;
 H = 10;
+
+Plot_prism = true;
+Plot_normals = true;
+
+%********************************************************************
+
 R=H/2;
 
 %**********************************
@@ -289,15 +301,21 @@ F = [1 0 0 0 0 0 0;0 cos(angle) -sin(angle) 0 0 0 0;0 sin(angle) cos(angle) 0 0 
 angle = 2*pi;
 F = [cos(angle) 0 sin(angle) 0 0 0 0;0 1 0 0 0 0 0;-sin(angle) 0 cos(angle) 0 0 0 0;0 0 0 1 0 0 0;0 0 0 0 cos(angle) 0 sin(angle); 0 0 0 0 0 1 0;0 0 0 0 -sin(angle) 0 cos(angle)]*F;
 
-
-N = length(F)
+%**********************************
+%***** Plotting the prism and normals
+%**********************************
+N = length(F) % Displays number of points
+if Plot_prism==true
 plot3(F(1,:),F(2,:),F(3,:),'k.')
 hold on
-%set(gca,'visible','off') % Axis on/off
+set(gca,'visible','off') % Axis on/off
 axis image
 hold off
+end
+if Plot_normals==true
 quiver3(F(1,:),F(2,:),F(3,:),F(5,:),F(6,:),F(7,:),'k')
 hold on
 set(gca,'visible','off') % Axis on/off
 axis image
 hold off
+end
