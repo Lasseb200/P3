@@ -7,11 +7,6 @@ The code is written in plain text, and is meant to be copy/pasted into the MATLA
   1. Ensure that files nrau.m, nrag.m, niau.m and niag.m are installed and visible in the MATLAB folder.
   2. Run the 3D point model for either [spheres](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20sphere), [rods](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20rod) or [triangular prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20prism).
   3. Run the [absorption calculation code](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Pulse%20calculation). Make sure that the variables from the 3D model haven't been cleared.
-  
-notes: Choose between gold or silver nanoparticles by choosing permitivitty on line 61 in the absorption calculation code, the direction of the E-field is chosen on line 58. The rod and prism models can be rotated in any direction in the bottom of their respective source code. 
-
-### Combined absorption from different angles
-The combined absorption from *N* different angles can be calculated for rods (not done) and [prisms](https://github.com/Lasseb200/P3/blob/main/MATLAB-finite-element-method/Pulse%20expansion/Prisms_total_absorption). The code is, however, quite processing heavy.
 
 ### Images:
 <img src="3D_point_model_of_prism.png" width="350"> <img src="Ag_rods_plot.png" width="350">
