@@ -1,3 +1,13 @@
+% Pulse calculation
+
+%********************************************************************
+%                           Settings
+%*******************************************************************
+
+True_for_silver___False_for_gold=true;
+
+%*******************************************************************
+
 n_water = 1.333;
 eps_water = n_water^2;
 eps_0 = 8.85418782*10^(-12);
@@ -24,10 +34,8 @@ k_Ag = interp1(wl,k_data_Ag,wavelength,'makima');
 eps_Ag = (n_Ag+img.*k_Ag).^2;
 eps_Au = (n_Au+img.*k_Au).^2;
 
-for index_i = 1:N
-    i=index_i;
-    for index_j = 1:N
-        j=index_j;
+for i = 1:N
+    for j = 1:N
         if not(i==j)
 
             A(i,j) = (((4*pi)^(-1))*(sqrt(((F(1,i)-F(1,j))^2)+(F(2,i)-F(2,j))^2+(F(3,i)-F(3,j))^2))^(-1))*F(4,j);
@@ -42,21 +50,26 @@ for index_i = 1:N
     end
 end
 
-% This is were the magic happens
+% Søndergaards fix
 uga = sum(transpose(B));
 buga = (eye(length(uga))).*uga;
 ongo = eye(length(uga))*0.5;
 bongo = ongo+buga;
 B=B-bongo;
 
-N 
-phi_0 = (-E_0)*(0.33*F(1,:)+0.33*F(2,:)+0.33*F(3,:)); % Change orientation of E-field
+
+
+Total = 0;
+for xxx = 1:3 % To calculate light polarized in x,y,z-directions
+phi_0 = -E_0*F(xxx,:); % Polarization of the field
 Id = eye(N);
 vec = zeros(N,1);
-eps = eps_Ag; % Change material here
-
+if True_for_silver___False_for_gold==true
+    eps = eps_Ag;
+else
+    eps = eps_Au;
+end
 Nsteps = length(eps);
-
 for x=1:Nsteps
     Solution{x} = inv([(0.5.*Id-B) A;(0.5.*Id+B) -(((eps_water)./(eps(x))).*A)])*[(transpose(phi_0));vec];
 end
@@ -69,9 +82,11 @@ SumFinal = sum(psi_phi_area,1) ;
 for steps = 1:Nsteps
     C_abs(steps) = 2.*pi.*imag(eps(steps)).*real(conj((eps_water)/(eps(steps))) ...
         .*SumFinal(1,steps)).*((wavelength(steps).*n_water.*(abs(E_0))^2)^(-1));
-end 
-
-plot(wavelength*10^9,C_abs,'LineWidth',1.3)
+end
+Total = Total+C_abs; % The absorption from light polarized in all directions
+end
+N % Display number of points
+plot(wavelength*10^9,Total,'LineWidth',1.3)
 hold on
 xlabel('Wavelength [nm]')
 ylabel('Absorption')
