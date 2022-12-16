@@ -1,12 +1,12 @@
-% Prism
+% Linear prism
 clear all
 
 %********************************************************************
 %                           Settings
 %********************************************************************
-% Note: not all N, L and D values are compatible with each other
-L = 30; % Sidelength
-D=10; % Diameter / Height
+
+L = 30;
+D=10;
 N = 4;
 
 plot_tri_geometry = true;
@@ -23,6 +23,7 @@ plot_2D_sph_mesh = false;
 plot_final_prism = true;
 
 plot_normals=false;
+
 %********************************************************************
 
 H = sqrt(3)/2*L;
