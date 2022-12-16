@@ -1,7 +1,15 @@
+% Linear calculation
 clearvars -except P T
 
-% Choose material
+%********************************************************************
+%                           Settings
+%********************************************************************
+
 True_for_silver___false_for_gold = true;
+
+%********************************************************************
+
+
 %******************************
 %**** Area calculation
 %******************************
@@ -221,7 +229,10 @@ clearvars -except A B P T Sigma_i Area True_for_silver___false_for_gold
 %**** Phi
 %******************************
 E_0 = 1;
-phi_0 = (-E_0)*(P(1,:)); % Change orientation of E-field
+
+Total = 0;
+for xxx=1:3
+phi_0 = (-E_0)*(P(xxx,:)); % Change orientation of E-field
 
 
 %******************************
@@ -274,8 +285,9 @@ for i =1:length(wavelength)
     end
     C_abs(i) = 2.*pi.*imag(eps(i))./(wavelength(i).*n_water.*(abs(E_0)).^2).*real(sum(conj(eps_water./eps(i)).*P_abs_k,2));
 end
-
-plot(wavelength*10^9,C_abs,'linewidth',1.3)
+Total=Total+C_abs;
+end
+plot(wavelength*10^9,Total,'linewidth',1.3)
 hold on
 xlabel('Wavelength [nm]')
 ylabel('Absorption')
