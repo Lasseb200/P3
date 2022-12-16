@@ -9,12 +9,12 @@ L = 30;
 D=10;
 N = 4;
 
-plot_tri_geometry = true;
-plot_2D_tri_mesh = true;
+plot_tri_geometry = false;
+plot_2D_tri_mesh = false;
 plot_tri_surfaces = false;
 
-plot_cyl_geometry= true;
-plot_2D_cyl_mesh = true;
+plot_cyl_geometry= false;
+plot_2D_cyl_mesh = false;
 plot_prism_without_corners = false;
 
 plot_sph_geometry = false;
