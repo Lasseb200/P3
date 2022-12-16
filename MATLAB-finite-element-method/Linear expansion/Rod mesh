@@ -164,7 +164,7 @@ end
 %**********************************
 clear p e t A
 angle = pi/4;
-N_sph2 = N_sph+1
+N_sph2 = N_sph+1;
 % Left:
 for i=1:N_sph2 
     t1a=pi/2*R*(i-1)/N_sph2;
@@ -322,7 +322,7 @@ end
 %***** Plotting the complete rod
 %**********************************
 if plot_complete_rod==true
-N = length(P) % Prints number of triangles
+N = length(T) % Prints number of triangles
 AR % Prints aspect ratio
 clear x y z r1 r2 r3
 for k = 1:length(T)
